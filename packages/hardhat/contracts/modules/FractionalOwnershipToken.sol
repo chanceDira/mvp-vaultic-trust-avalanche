@@ -75,7 +75,6 @@ contract VaulticFractionalOwnershipToken is
         __ERC20_init(tokenName, tokenSymbol);
         __ERC20Pausable_init();
         __Ownable_init(_owner);
-        __UUPSUpgradeable_init();
 
         assetId = _assetId;
         assetName = _assetName;

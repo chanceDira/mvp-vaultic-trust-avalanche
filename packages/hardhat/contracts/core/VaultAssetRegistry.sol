@@ -126,7 +126,6 @@ contract VaulticAssetRegistry is
     function initialize(address initialOwner, address initialTokenizer) external initializer {
         __Ownable_init(initialOwner);
         __Pausable_init();
-        __UUPSUpgradeable_init();
 
         if (initialTokenizer == address(0)) revert InvalidTokenContractAddress();
 
