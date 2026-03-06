@@ -4,15 +4,13 @@ pragma solidity ^0.8.24;
 import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import {
-    ReentrancyGuardUpgradeable
-} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import { VaulticAssetRegistry } from "../core/VaultAssetRegistry.sol";
-import { VaulticFractionalOwnershipToken } from "./VaulticFractionalOwnershipToken.sol";
+import { VaulticFractionalOwnershipToken } from "./FractionalOwnershipToken.sol";
 
 /**
  * @title VaulticInvestmentManager
@@ -23,7 +21,7 @@ contract VaulticInvestmentManager is
     Initializable,
     OwnableUpgradeable,
     PausableUpgradeable,
-    ReentrancyGuardUpgradeable,
+    ReentrancyGuard,
     UUPSUpgradeable
 {
     using SafeERC20 for IERC20;
@@ -126,7 +124,6 @@ contract VaulticInvestmentManager is
 
         __Ownable_init(_owner);
         __Pausable_init();
-        __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 
         registry = VaulticAssetRegistry(_registry);
