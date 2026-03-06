@@ -14,6 +14,7 @@ import { VaulticFractionalOwnershipToken } from "./FractionalOwnershipToken.sol"
 
 /**
  * @title VaulticInvestmentManager
+ * @author @0xJonaseb11
  * @notice Orchestrates fractional asset tokenization, purchases, proceeds, and full-owner relisting. Holds TOKENIZER_ROLE on the registry.
  * @dev Payments in ERC20 stablecoin. ReentrancyGuard, SafeERC20, pull-over-push withdrawals. UUPS upgradeable, pausable.
  */
@@ -124,7 +125,6 @@ contract VaulticInvestmentManager is
 
         __Ownable_init(_owner);
         __Pausable_init();
-        __UUPSUpgradeable_init();
 
         registry = VaulticAssetRegistry(_registry);
         paymentToken = IERC20(_paymentToken);
