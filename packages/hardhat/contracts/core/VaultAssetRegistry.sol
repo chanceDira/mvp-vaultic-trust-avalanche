@@ -4,8 +4,8 @@ pragma solidity ^0.8.24;
 import { UUPSUpgradeable }            from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import { Initializable }              from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { OwnableUpgradeable }         from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import { PausableUpgradeable }        from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title VaulticAssetRegistry
@@ -18,7 +18,7 @@ contract VaulticAssetRegistry is
     Initializable,
     OwnableUpgradeable,
     PausableUpgradeable,
-    ReentrancyGuardUpgradeable,
+    ReentrancyGuard,
     UUPSUpgradeable
 {
 
@@ -126,7 +126,6 @@ contract VaulticAssetRegistry is
     function initialize(address initialOwner, address initialTokenizer) external initializer {
         __Ownable_init(initialOwner);
         __Pausable_init();
-        __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 
         if (initialTokenizer == address(0)) revert InvalidTokenContractAddress();
