@@ -28,6 +28,23 @@ Before you begin, you need to install the following tools:
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
 
+## Dependency installation
+
+This repo uses **Yarn workspaces**. Install dependencies **from the repository root** so all packages (`packages/hardhat`, `packages/nextjs`) are installed together:
+
+```bash
+# From repo root (recommended)
+yarn install
+```
+
+If you see a cache error (e.g. `ENOENT` on a cache file), refresh the cache and reinstall:
+
+```bash
+yarn install:refresh
+```
+
+You can run `yarn install` from `packages/hardhat` or `packages/nextjs` as well; Yarn will use the root workspace and install everything. The lockfile lives at the root.
+
 ## Quickstart
 
 To get started with Scaffold-ETH 2, follow the steps below:

@@ -8,6 +8,7 @@
     ]
   },
   "scripts": {
+    "install:refresh": "yarn cache clean && yarn install",
     "account": "yarn hardhat:account",
     "account:generate": "yarn workspace @se-2/hardhat account:generate",
     "account:import": "yarn workspace @se-2/hardhat account:import",
@@ -56,5 +57,8 @@
   "packageManager": "yarn@3.2.3",
   "engines": {
     "node": ">=20.18.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^5.6.1"
   }
 }
