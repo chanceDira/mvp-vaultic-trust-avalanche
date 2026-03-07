@@ -29,8 +29,12 @@ export default function MarketplacePage() {
             </div>
             <h1 className="text-3xl font-bold text-base-content">Marketplace</h1>
           </div>
-          <p className="text-base-content/80 mb-6">
+          <p className="text-base-content/80 mb-2">
             Browse tokenized assets. Invest in whole assets or buy fractions with on-chain ownership.
+          </p>
+          <p className="text-sm text-base-content/60 mb-6">
+            Only assets with status <span className="font-medium text-base-content/70">Tokenized</span> show the buy
+            panel; Pending assets are not yet open for investment.
           </p>
 
           {!isConnected && (

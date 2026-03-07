@@ -57,7 +57,14 @@ export default function InvestorPage() {
               <span className="loading loading-spinner loading-md" />
             </div>
           ) : (
-            <InvestorHoldingsList address={address as `0x${string}`} assetIds={ids} />
+            <>
+              <h2 className="text-xl font-bold text-base-content mb-4">Your positions</h2>
+              <InvestorHoldingsList address={address as `0x${string}`} assetIds={ids} />
+              <p className="mt-4 text-sm text-base-content/70">
+                Positions reflect on-chain share balances from the Investment Manager. Buy shares in the marketplace on
+                tokenized assets to see them here.
+              </p>
+            </>
           )}
 
           <div className="mt-8">
