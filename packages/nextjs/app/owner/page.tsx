@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
+import { BuildingOffice2Icon, WalletIcon } from "@heroicons/react/24/outline";
 import { AssetCard } from "~~/components/assets/AssetCard";
 import { AssetForm } from "~~/components/assets/AssetForm";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export default function OwnerPage() {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: assetIds, isLoading: isLoadingIds } = useScaffoldReadContract({
     contractName: "VaulticAssetRegistry",
     functionName: "getAssetsByOwner",
@@ -31,33 +32,55 @@ export default function OwnerPage() {
             Submit real-world assets with documentation. Choose whole-asset sale or fractional tokenization.
           </p>
 
-          <div className="mb-8">
-            <AssetForm />
-          </div>
-
-          <h2 className="text-xl font-bold text-base-content mb-4">Your assets</h2>
-          {!address ? (
-            <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center text-base-content/70">
-              Connect your wallet to see your assets and register new ones.
-            </div>
-          ) : isLoadingIds ? (
-            <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center">
-              <span className="loading loading-spinner loading-md" />
-            </div>
-          ) : ids.length === 0 ? (
-            <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center text-base-content/70">
-              No assets yet. Register an asset above or{" "}
-              <Link href="/marketplace" className="link link-primary">
-                browse the marketplace
-              </Link>
-              .
+          {!isConnected ? (
+            <div className="rounded-2xl border border-base-300 bg-base-100 p-8 sm:p-10 text-center shadow-sm">
+              <div className="w-14 h-14 rounded-full bg-base-200 flex items-center justify-center mx-auto mb-4">
+                <WalletIcon className="h-7 w-7 text-base-content/60" />
+              </div>
+              <h2 className="text-xl font-bold text-base-content">Connect your wallet</h2>
+              <p className="mt-2 text-base-content/70 max-w-md mx-auto">
+                You must connect your wallet to access the owner dashboard and register or manage assets.
+              </p>
+              <div className="mt-6">
+                <RainbowKitCustomConnectButton />
+              </div>
+              <p className="mt-6 text-sm text-base-content/60">
+                <Link href="/litepaper" className="link link-primary">
+                  Read the litepaper
+                </Link>
+                {" · "}
+                <Link href="/marketplace" className="link link-primary">
+                  Browse marketplace
+                </Link>
+              </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {ids.map(id => (
-                <AssetCard key={id.toString()} assetId={id} showInvestmentPanel={false} />
-              ))}
-            </div>
+            <>
+              <div className="mb-8">
+                <AssetForm />
+              </div>
+
+              <h2 className="text-xl font-bold text-base-content mb-4">Your assets</h2>
+              {isLoadingIds ? (
+                <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center">
+                  <span className="loading loading-spinner loading-md" />
+                </div>
+              ) : ids.length === 0 ? (
+                <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center text-base-content/70">
+                  No assets yet. Register an asset above or{" "}
+                  <Link href="/marketplace" className="link link-primary">
+                    browse the marketplace
+                  </Link>
+                  .
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {ids.map(id => (
+                    <AssetCard key={id.toString()} assetId={id} showInvestmentPanel={false} />
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
