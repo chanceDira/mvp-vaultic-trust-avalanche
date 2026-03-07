@@ -5,7 +5,7 @@ import { Address, AddressInput, Balance, EtherInput } from "@scaffold-ui/compone
 import { Address as AddressType, createWalletClient, http, parseEther } from "viem";
 import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
-import { BanknotesIcon } from "@heroicons/react/24/outline";
+import { BanknotesIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useTargetNetwork, useTransactor } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -49,7 +49,7 @@ export const Faucet = () => {
             </p>
           </>,
         );
-        console.error("⚡️ ~ file: Faucet.tsx:getFaucetAddress ~ error", error);
+        console.error("[Faucet] getFaucetAddress error", error);
       }
     };
     getFaucetAddress();
@@ -70,7 +70,7 @@ export const Faucet = () => {
       setInputAddress(undefined);
       setSendValue("");
     } catch (error) {
-      console.error("⚡️ ~ file: Faucet.tsx:sendETH ~ error", error);
+      console.error("[Faucet] sendETH error", error);
       setLoading(false);
     }
   };
@@ -92,8 +92,12 @@ export const Faucet = () => {
           {/* dummy input to capture event onclick on modal box */}
           <input className="h-0 w-0 absolute top-0 left-0" />
           <h3 className="text-xl font-bold mb-3">Local Faucet</h3>
-          <label htmlFor="faucet-modal" className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
-            ✕
+          <label
+            htmlFor="faucet-modal"
+            className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3"
+            aria-label="Close"
+          >
+            <XMarkIcon className="h-5 w-5" />
           </label>
           <div className="space-y-3">
             <div className="flex space-x-4">

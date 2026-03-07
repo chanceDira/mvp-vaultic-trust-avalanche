@@ -49,7 +49,7 @@ export const HeaderMenuLinks = () => {
 };
 
 /**
- * Site header
+ * Site header. Preserves Hardhat/Scaffold-ETH structure: logo, nav links, Connect Wallet, Faucet (local only).
  */
 export const Header = () => {
   const { targetNetwork } = useTargetNetwork();
@@ -61,38 +61,38 @@ export const Header = () => {
   });
 
   return (
-    <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 shrink-0 justify-between z-20 border-b border-base-300 px-0 sm:px-2">
-      <div className="navbar-start w-auto lg:w-1/2">
-        <details className="dropdown" ref={burgerMenuRef}>
-          <summary className="ml-1 btn btn-ghost lg:hidden hover:bg-transparent">
-            <Bars3Icon className="h-1/2" />
-          </summary>
-          <ul
-            className="menu menu-compact dropdown-content mt-3 p-2 shadow-sm bg-base-100 rounded-box w-52"
-            onClick={() => {
-              burgerMenuRef?.current?.removeAttribute("open");
-            }}
-          >
+    <header className="sticky top-0 z-20 border-b border-base-300 bg-base-100">
+      <div className="navbar min-h-0 shrink-0 justify-between px-4 sm:px-6 lg:px-8">
+        <div className="navbar-start w-auto lg:w-1/2">
+          <details className="dropdown" ref={burgerMenuRef}>
+            <summary className="ml-1 btn btn-ghost lg:hidden hover:bg-transparent" aria-label="Open menu">
+              <Bars3Icon className="h-6 w-6" />
+            </summary>
+            <ul
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow-lg bg-base-100 rounded-box w-52"
+              onClick={() => burgerMenuRef?.current?.removeAttribute("open")}
+            >
+              <HeaderMenuLinks />
+            </ul>
+          </details>
+          <Link href="/" className="hidden lg:flex items-center gap-2 mr-8 shrink-0">
+            <div className="flex relative w-10 h-10">
+              <Image alt="Vaultic Trust" className="cursor-pointer" fill src="/logo.svg" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold leading-tight text-base-content">Vaultic Trust</span>
+              <span className="text-xs text-base-content/70">Tokenize Africa&apos;s real economy</span>
+            </div>
+          </Link>
+          <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
             <HeaderMenuLinks />
           </ul>
-        </details>
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <div className="flex relative w-10 h-10">
-            <Image alt="Vaultic Trust" className="cursor-pointer" fill src="/logo.svg" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold leading-tight text-primary">Vaultic Trust</span>
-            <span className="text-xs opacity-80">Tokenize Africa&apos;s real economy</span>
-          </div>
-        </Link>
-        <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
-          <HeaderMenuLinks />
-        </ul>
+        </div>
+        <div className="navbar-end gap-2">
+          <RainbowKitCustomConnectButton />
+          {isLocalNetwork && <FaucetButton />}
+        </div>
       </div>
-      <div className="navbar-end grow mr-4">
-        <RainbowKitCustomConnectButton />
-        {isLocalNetwork && <FaucetButton />}
-      </div>
-    </div>
+    </header>
   );
 };
