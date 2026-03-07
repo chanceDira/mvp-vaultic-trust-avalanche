@@ -40,7 +40,11 @@ const deployInvestmentManager: DeployFunction = async function (hre: HardhatRunt
   });
 
   const registryContract = await hre.ethers.getContract<Contract>("VaulticAssetRegistry", deployer);
-  await registryContract.setTokenizer((await get("VaulticInvestmentManager")).address);
+  // Cap gas so local/CI nodes with low block gas limit (e.g. 16_777_216) accept the tx
+  const setTokenizerGasLimit = 500_000;
+  await registryContract.setTokenizer((await get("VaulticInvestmentManager")).address, {
+    gasLimit: setTokenizerGasLimit,
+  });
   console.log("VaulticAssetRegistry tokenizer set to VaulticInvestmentManager");
 };
 

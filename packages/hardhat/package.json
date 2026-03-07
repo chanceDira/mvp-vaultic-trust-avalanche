@@ -16,8 +16,8 @@
     "format": "prettier --write './**/*.(ts|sol)'",
     "generate": "yarn account:generate",
     "hardhat-verify": "hardhat verify",
-    "lint": "eslint",
-    "lint-staged": "eslint",
+    "lint": "eslint .",
+    "lint-staged": "eslint --fix",
     "test": "REPORT_GAS=true hardhat test --network hardhat",
     "verify": "hardhat etherscan-verify"
   },
