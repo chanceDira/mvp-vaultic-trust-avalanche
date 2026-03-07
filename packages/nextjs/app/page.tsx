@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { NextPage } from "next";
 import {
+  ArrowRightIcon,
   BuildingOffice2Icon,
   CheckCircleIcon,
   CloudIcon,
@@ -22,136 +23,164 @@ const ASSET_PREVIEWS = [
   { label: "Location Oracles", value: "DePIN", icon: MapPinIcon },
 ];
 
+const FEATURES = ["Regulated On/Off-Ramp", "Proof-of-Asset Oracles", "Escrow & Custody", "Secondary Liquidity"];
+
+const HOW_IT_WORKS = [
+  {
+    title: "Asset owners",
+    description: "Submit real-world assets with documentation. Choose whole-asset sale or fractional tokenization.",
+    href: "/owner",
+    label: "Owner dashboard",
+    icon: BuildingOffice2Icon,
+  },
+  {
+    title: "Marketplace",
+    description: "Browse tokenized assets. Invest in whole assets or buy fractions with on-chain ownership.",
+    href: "/marketplace",
+    label: "Browse marketplace",
+    icon: CubeIcon,
+  },
+  {
+    title: "Investors",
+    description: "View your portfolio. Track whole-asset and fractional holdings with transparent funding progress.",
+    href: "/investor",
+    label: "View portfolio",
+    icon: WalletIcon,
+  },
+];
+
 const Home: NextPage = () => {
   return (
-    <div className="flex flex-col grow">
-      <section className="px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-[1fr,400px] gap-12 lg:gap-16 items-start">
-            {/* Left: Hero (reference: first screenshot) */}
-            <div className="max-w-xl">
-              <h1 className="text-4xl md:text-5xl font-bold text-base-content tracking-tight">
-                Tokenize Africa&apos;s Real Economy
-              </h1>
-              <p className="mt-6 text-base md:text-lg text-base-content/80 leading-relaxed">
-                Vaultic Trust is the compliant RWA tokenization layer for Rwanda and Africa. Fractionalize real estate,
-                commodities, carbon credits, and infrastructure into programmable, liquid digital assets backed by
-                verifiable proofs and on-chain transparency.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/owner" className="btn btn-primary gap-2">
-                  Get Early Access
-                </Link>
-                <a
-                  href="https://vaultictrust.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn btn-outline border-base-content/30 text-base-content hover:bg-base-200 gap-2"
-                >
-                  Read the Litepaper
-                </a>
-              </div>
-              <p className="mt-8 text-sm text-base-content/70">Compliance-first • KYC/AML • Auditable</p>
-              <ul className="mt-6 space-y-3">
-                {["Regulated On/Off-Ramp", "Proof-of-Asset Oracles", "Escrow & Custody", "Secondary Liquidity"].map(
-                  (item, i) => (
-                    <li key={i} className="flex items-center gap-2 text-base-content/80">
-                      <CheckCircleIcon className="h-5 w-5 text-primary shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ),
-                )}
-              </ul>
-            </div>
+    <div className="min-h-0 flex flex-col">
+      {/* ─── Hero: full-width, centered, welcoming ─── */}
+      <section className="relative flex min-h-[calc(100vh-8rem)] sm:min-h-[calc(100vh-7rem)] flex-col justify-center bg-base-100 px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24">
+        <div className="mx-auto w-full max-w-4xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/90 sm:text-sm">
+            Compliant RWA Tokenization
+          </p>
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-base-content sm:mt-5 sm:text-5xl lg:text-6xl xl:text-7xl xl:leading-[1.1]">
+            Tokenize Africa&apos;s <span className="text-primary">Real Economy</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-base-content/80 sm:mt-8 sm:text-lg">
+            Vaultic Trust is the compliant RWA tokenization layer for Rwanda and Africa. Fractionalize real estate,
+            commodities, carbon credits, and infrastructure into programmable, liquid digital assets backed by
+            verifiable proofs and on-chain transparency.
+          </p>
+          <div className="mt-10 flex w-full flex-col items-stretch justify-center gap-4 sm:mt-12 sm:flex-row sm:items-center sm:gap-5 md:gap-6">
+            <Link
+              href="/owner"
+              className="btn btn-primary btn-lg min-h-12 flex flex-1 items-center justify-center gap-2 rounded-xl px-6 font-semibold sm:min-w-[200px] sm:flex-initial sm:flex-none sm:px-8 md:min-w-[220px] md:px-10"
+            >
+              Get Early Access
+              <ArrowRightIcon className="h-5 w-5 shrink-0" />
+            </Link>
+            <a
+              href="https://vaultictrust.com"
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-outline btn-lg min-h-12 flex flex-1 items-center justify-center rounded-xl border-2 border-base-content/20 px-6 text-base-content hover:bg-base-200 hover:border-base-content/30 sm:min-w-[200px] sm:flex-initial sm:flex-none sm:px-8 md:min-w-[220px] md:px-10"
+            >
+              Read the Litepaper
+            </a>
+          </div>
+          <p className="mt-10 text-sm font-medium tracking-wide text-base-content/60 sm:mt-12">
+            Compliance-first · KYC/AML · Auditable
+          </p>
+          <ul className="mx-auto mt-6 flex max-w-xl flex-wrap justify-center gap-x-8 gap-y-3 sm:mt-8 sm:gap-x-10">
+            {FEATURES.map((item, i) => (
+              <li key={i} className="flex items-center justify-center gap-2 text-sm text-base-content/85 sm:text-base">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15">
+                  <CheckCircleIcon className="h-3.5 w-3.5 text-primary" />
+                </span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-            {/* Right: Asset Tokenization Preview panel */}
-            <div className="bg-base-200/80 rounded-2xl border border-base-300 shadow-sm p-6 lg:p-8">
-              <h2 className="text-lg font-semibold text-base-content mb-6">Asset Tokenization Preview</h2>
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {ASSET_PREVIEWS.map(({ label, value, icon: Icon }) => (
-                  <div key={label} className="bg-base-100 rounded-xl border border-base-300 p-4 flex flex-col gap-1">
-                    <Icon className="h-5 w-5 text-primary" />
-                    <span className="font-medium text-base-content text-sm">{label}</span>
-                    <span className="text-xs text-base-content/70">{value}</span>
-                  </div>
-                ))}
+      {/* ─── Asset Tokenization Preview (full-width, spans page) ─── */}
+      <section className="border-t border-base-300/80 bg-base-200/60 py-16 lg:py-20">
+        <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12">
+          <div className="mb-8 sm:mb-10">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary/90 sm:text-sm">Preview</p>
+            <h2 className="mt-1 text-xl font-bold text-base-content sm:text-2xl lg:text-3xl">Asset Tokenization</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-6 lg:gap-6">
+            {ASSET_PREVIEWS.map(({ label, value, icon: Icon }) => (
+              <div
+                key={label}
+                className="rounded-xl border border-base-300/70 bg-base-100 p-4 shadow-sm transition-colors hover:border-primary/25 hover:shadow-md sm:p-5"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary sm:h-11 sm:w-11">
+                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                </span>
+                <p className="mt-3 font-semibold text-base-content sm:text-sm">{label}</p>
+                <p className="mt-1 text-xs font-medium text-base-content/60">{value}</p>
               </div>
-              <div className="pt-4 border-t border-base-300">
-                <p className="font-semibold text-base-content">VT-RWA: Kigali Green Tower</p>
-                <p className="text-xs text-base-content/70 mt-1">
-                  Supply: 1,000,000 VT-KGT • Compliance: ERC-3643 • Oracle: Chainlink PoA • Custody: Qualified Trustee
-                </p>
-                <div className="mt-3 h-2 rounded-full bg-base-300 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: "65%" }}
-                    role="progressbar"
-                    aria-valuenow={65}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                  />
-                </div>
+            ))}
+          </div>
+          <div className="mt-8 rounded-2xl border border-base-300/80 bg-base-100 p-5 shadow-sm sm:mt-10 sm:p-6 lg:p-8">
+            <p className="font-bold text-base-content sm:text-lg">VT-RWA: Kigali Green Tower</p>
+            <p className="mt-2 text-sm leading-relaxed text-base-content/60">
+              Supply: 1,000,000 VT-KGT · Compliance: ERC-3643 · Oracle: Chainlink PoA · Custody: Qualified Trustee
+            </p>
+            <div className="mt-5 sm:mt-6">
+              <div className="mb-2 flex justify-between text-sm font-medium text-base-content/70">
+                <span>Funding progress</span>
+                <span>65%</span>
+              </div>
+              <div
+                className="h-3 w-full overflow-hidden rounded-full bg-base-300/80"
+                role="progressbar"
+                aria-valuenow={65}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-500"
+                  style={{ width: "65%" }}
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How it works (preserve app structure) */}
-      <section id="how-it-works" className="py-12 md:py-16 px-4 sm:px-6 lg:px-8 bg-base-200/50">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-semibold text-center text-base-content mb-10">How it works</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="card bg-base-100 border border-base-300 shadow-sm">
-              <div className="card-body">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <BuildingOffice2Icon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="card-title text-lg">Asset owners</h3>
-                <p className="text-base-content/80 text-sm">
-                  Submit real-world assets with documentation. Choose whole-asset sale or fractional tokenization.
-                </p>
-                <Link href="/owner" className="link link-primary text-sm mt-2">
-                  Go to Owner dashboard
-                </Link>
-              </div>
-            </div>
-            <div className="card bg-base-100 border border-base-300 shadow-sm">
-              <div className="card-body">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <CubeIcon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="card-title text-lg">Marketplace</h3>
-                <p className="text-base-content/80 text-sm">
-                  Browse tokenized assets. Invest in whole assets or buy fractions with on-chain ownership.
-                </p>
-                <Link href="/marketplace" className="link link-primary text-sm mt-2">
-                  Browse marketplace
-                </Link>
-              </div>
-            </div>
-            <div className="card bg-base-100 border border-base-300 shadow-sm">
-              <div className="card-body">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <WalletIcon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="card-title text-lg">Investors</h3>
-                <p className="text-base-content/80 text-sm">
-                  View your portfolio. Track whole-asset and fractional holdings with transparent funding progress.
-                </p>
-                <Link href="/investor" className="link link-primary text-sm mt-2">
-                  View portfolio
-                </Link>
-              </div>
-            </div>
+      {/* ─── How it works ─── */}
+      <section id="how-it-works" className="bg-base-100 py-16 lg:py-20">
+        <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12">
+          <div className="mb-12 text-center lg:mb-14">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/90">Product</p>
+            <h2 className="text-2xl font-bold text-base-content sm:text-3xl">How it works</h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {HOW_IT_WORKS.map(({ title, description, href, label, icon: Icon }) => (
+              <Link
+                key={title}
+                href={href}
+                className="group rounded-2xl border border-base-300/80 bg-base-100 p-6 text-left shadow-sm transition-all duration-200 hover:border-primary/20 hover:shadow-md sm:p-8"
+              >
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
+                  <Icon className="h-6 w-6" />
+                </span>
+                <h3 className="mt-5 text-lg font-bold text-base-content">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-base-content/70">{description}</p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-all group-hover:gap-2.5">
+                  {label}
+                  <ArrowRightIcon className="h-4 w-4" />
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="py-10 px-4 border-t border-base-300">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-base-content/80">
-            Built on <span className="font-medium text-base-content">Avalanche C-Chain</span> for low gas and high
+      {/* ─── Footer strip ─── */}
+      <section className="border-t border-base-300/80 bg-base-200/50 py-8 sm:py-10">
+        <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12">
+          <p className="text-center text-sm text-base-content/70">
+            Built on <span className="font-semibold text-base-content">Avalanche C-Chain</span> for low gas and high
             throughput. On-chain ownership and funding progress.
           </p>
         </div>

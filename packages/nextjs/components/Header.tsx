@@ -5,21 +5,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
-import { Bars3Icon, BuildingOffice2Icon, HomeIcon, Squares2X2Icon, WalletIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
   label: string;
   href: string;
-  icon?: React.ReactNode;
 };
 
 export const menuLinks: HeaderMenuLink[] = [
-  { label: "Home", href: "/", icon: <HomeIcon className="h-4 w-4" /> },
-  { label: "Owner", href: "/owner", icon: <BuildingOffice2Icon className="h-4 w-4" /> },
-  { label: "Marketplace", href: "/marketplace", icon: <Squares2X2Icon className="h-4 w-4" /> },
-  { label: "Investor", href: "/investor", icon: <WalletIcon className="h-4 w-4" /> },
+  { label: "Home", href: "/" },
+  { label: "Owner", href: "/owner" },
+  { label: "Marketplace", href: "/marketplace" },
+  { label: "Investor", href: "/investor" },
 ];
 
 export const HeaderMenuLinks = () => {
@@ -27,7 +27,7 @@ export const HeaderMenuLinks = () => {
 
   return (
     <>
-      {menuLinks.map(({ label, href, icon }) => {
+      {menuLinks.map(({ label, href }) => {
         const isActive = pathname === href;
         return (
           <li key={href}>
@@ -36,10 +36,9 @@ export const HeaderMenuLinks = () => {
               passHref
               className={`${
                 isActive ? "bg-secondary shadow-md" : ""
-              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full`}
             >
-              {icon}
-              <span>{label}</span>
+              {label}
             </Link>
           </li>
         );
@@ -88,7 +87,8 @@ export const Header = () => {
             <HeaderMenuLinks />
           </ul>
         </div>
-        <div className="navbar-end gap-2">
+        <div className="navbar-end gap-3">
+          <SwitchTheme className="flex items-center" />
           <RainbowKitCustomConnectButton />
           {isLocalNetwork && <FaucetButton />}
         </div>
