@@ -12,8 +12,10 @@ type ChainAttributes = {
 export type ChainWithAttributes = chains.Chain & Partial<ChainAttributes>;
 export type AllowedChainIds = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
-// Mapping of chainId to RPC chain name an format followed by alchemy and infura
+// Mapping of chainId to RPC chain name and format followed by alchemy and infura (Avalanche not on Alchemy)
 export const RPC_CHAIN_NAMES: Record<number, string> = {
+  [chains.avalanche.id]: "avalanche",
+  [chains.avalancheFuji.id]: "avalanche-fuji",
   [chains.mainnet.id]: "eth-mainnet",
   [chains.goerli.id]: "eth-goerli",
   [chains.sepolia.id]: "eth-sepolia",
@@ -43,6 +45,12 @@ export const getAlchemyHttpUrl = (chainId: number) => {
 };
 
 export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
+  [chains.avalanche.id]: {
+    color: "#e84142",
+  },
+  [chains.avalancheFuji.id]: {
+    color: "#e84142",
+  },
   [chains.hardhat.id]: {
     color: "#b8af0c",
   },

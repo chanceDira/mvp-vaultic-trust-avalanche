@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import { UUPSUpgradeable }            from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import { Initializable }              from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { OwnableUpgradeable }         from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
@@ -21,7 +21,6 @@ contract VaulticAssetRegistry is
     ReentrancyGuard,
     UUPSUpgradeable
 {
-
     error UnauthorizedCaller(address caller);
     error AssetAlreadyRegistered(uint256 assetId);
     error InvalidStateTransition(uint256 assetId, AssetState current, AssetState requested);
@@ -73,8 +72,8 @@ contract VaulticAssetRegistry is
     event AssetRegistered(
         uint256 indexed assetId,
         address indexed assetOwner,
-        string  assetName,
-        string  assetCategory,
+        string assetName,
+        string assetCategory,
         uint128 valuation,
         OwnershipModel model
     );
@@ -89,17 +88,8 @@ contract VaulticAssetRegistry is
     event AssetClosed(uint256 indexed assetId, address indexed closedBy);
     event SoldSharesUpdated(uint256 indexed assetId, uint128 soldShares);
     event TokenizerUpdated(address indexed previous, address indexed updated);
-    event AssetOwnershipTransferred(
-        uint256 indexed assetId,
-        address indexed previousOwner,
-        address indexed newOwner
-    );
-    event AssetRelisted(
-        uint256 indexed assetId,
-        address indexed newOwner,
-        uint128 newValuation,
-        uint32  relistCount
-    );
+    event AssetOwnershipTransferred(uint256 indexed assetId, address indexed previousOwner, address indexed newOwner);
+    event AssetRelisted(uint256 indexed assetId, address indexed newOwner, uint128 newValuation, uint32 relistCount);
 
     address public tokenizer;
     uint96 private _assetCounter;
@@ -129,7 +119,7 @@ contract VaulticAssetRegistry is
 
         if (initialTokenizer == address(0)) revert InvalidTokenContractAddress();
 
-        tokenizer     = initialTokenizer;
+        tokenizer = initialTokenizer;
         _assetCounter = 1;
     }
 
@@ -140,10 +130,9 @@ contract VaulticAssetRegistry is
     function setTokenizer(address newTokenizer) external onlyOwner {
         if (newTokenizer == address(0)) revert InvalidTokenContractAddress();
         address prev = tokenizer;
-        tokenizer    = newTokenizer;
+        tokenizer = newTokenizer;
         emit TokenizerUpdated(prev, newTokenizer);
     }
-
 
     /**
      * @notice Registers a new real-world asset. Owner-only; deduplicated by content hash.
@@ -156,24 +145,18 @@ contract VaulticAssetRegistry is
      * @return assetId Assigned asset identifier.
      */
     function registerAsset(
-        address         assetOwner,
+        address assetOwner,
         string calldata assetName,
         string calldata assetCategory,
         string calldata metadataURI,
-        uint128         valuation,
-        OwnershipModel  model
-    )
-        external
-        onlyOwner
-        whenNotPaused
-        nonReentrant
-        returns (uint256 assetId)
-    {
-        if (assetOwner == address(0))             revert UnauthorizedCaller(address(0));
-        if (bytes(assetName).length     == 0)     revert EmptyStringField("assetName");
-        if (bytes(assetCategory).length == 0)     revert EmptyStringField("assetCategory");
-        if (bytes(metadataURI).length   == 0)     revert EmptyStringField("metadataURI");
-        if (valuation == 0)                       revert InvalidValuation(0);
+        uint128 valuation,
+        OwnershipModel model
+    ) external onlyOwner whenNotPaused nonReentrant returns (uint256 assetId) {
+        if (assetOwner == address(0)) revert UnauthorizedCaller(address(0));
+        if (bytes(assetName).length == 0) revert EmptyStringField("assetName");
+        if (bytes(assetCategory).length == 0) revert EmptyStringField("assetCategory");
+        if (bytes(metadataURI).length == 0) revert EmptyStringField("metadataURI");
+        if (valuation == 0) revert InvalidValuation(0);
 
         bytes32 guard = keccak256(abi.encodePacked(assetName, assetCategory, metadataURI, assetOwner));
         if (_registrationGuard[guard]) revert AssetAlreadyRegistered(0);
@@ -182,15 +165,15 @@ contract VaulticAssetRegistry is
         _registrationGuard[guard] = true;
 
         AssetRecord storage rec = _assets[assetId];
-        rec.assetId       = assetId;
-        rec.assetOwner    = assetOwner;
-        rec.state         = AssetState.PENDING;
-        rec.model         = model;
-        rec.registeredAt  = uint48(block.timestamp);
-        rec.valuation     = valuation;
-        rec.assetName     = assetName;
+        rec.assetId = assetId;
+        rec.assetOwner = assetOwner;
+        rec.state = AssetState.PENDING;
+        rec.model = model;
+        rec.registeredAt = uint48(block.timestamp);
+        rec.valuation = valuation;
+        rec.assetName = assetName;
         rec.assetCategory = assetCategory;
-        rec.metadataURI   = metadataURI;
+        rec.metadataURI = metadataURI;
 
         _ownerAssets[assetOwner].push(assetId);
         emit AssetRegistered(assetId, assetOwner, assetName, assetCategory, valuation, model);
@@ -222,19 +205,18 @@ contract VaulticAssetRegistry is
     ) external onlyTokenizer whenNotPaused assetExists(assetId) {
         AssetRecord storage rec = _assets[assetId];
 
-        if (rec.model != OwnershipModel.FRACTIONAL)
-            revert OwnershipModelMismatch(assetId, rec.model);
+        if (rec.model != OwnershipModel.FRACTIONAL) revert OwnershipModelMismatch(assetId, rec.model);
         if (rec.state != AssetState.ACTIVE && rec.state != AssetState.RELISTED)
             revert AssetNotActiveForTokenization(assetId, rec.state);
         if (tokenContract == address(0)) revert InvalidTokenContractAddress();
         if (totalShares == 0) revert InvalidShareSupply(0);
         if (pricePerShare == 0) revert InvalidTokenPrice(0);
 
-        rec.state         = AssetState.TOKENIZED;
+        rec.state = AssetState.TOKENIZED;
         rec.tokenContract = tokenContract;
-        rec.totalShares   = totalShares;
+        rec.totalShares = totalShares;
         rec.pricePerShare = pricePerShare;
-        rec.tokenizedAt   = uint48(block.timestamp);
+        rec.tokenizedAt = uint48(block.timestamp);
 
         emit AssetTokenized(assetId, tokenContract, totalShares, pricePerShare);
     }
@@ -244,16 +226,12 @@ contract VaulticAssetRegistry is
      * @param assetId Asset receiving the purchase.
      * @param sharesDelta Number of shares just purchased.
      */
-    function recordSharesSold(uint256 assetId, uint128 sharesDelta)
-        external
-        onlyTokenizer
-        assetExists(assetId)
-    {
+    function recordSharesSold(uint256 assetId, uint128 sharesDelta) external onlyTokenizer assetExists(assetId) {
         if (sharesDelta == 0) revert InvalidShareSupply(0);
 
         AssetRecord storage rec = _assets[assetId];
         uint128 updated = rec.soldShares + sharesDelta;
-        rec.soldShares  = updated;
+        rec.soldShares = updated;
 
         emit SoldSharesUpdated(assetId, updated);
     }
@@ -263,8 +241,7 @@ contract VaulticAssetRegistry is
      * @param assetId Asset identifier to close.
      */
     function closeAsset(uint256 assetId) external whenNotPaused assetExists(assetId) {
-        if (msg.sender != owner() && msg.sender != tokenizer)
-            revert UnauthorizedCaller(msg.sender);
+        if (msg.sender != owner() && msg.sender != tokenizer) revert UnauthorizedCaller(msg.sender);
 
         AssetRecord storage rec = _assets[assetId];
 
@@ -280,16 +257,14 @@ contract VaulticAssetRegistry is
      * @param assetId Asset whose ownership is transferring.
      * @param newOwner New full owner address.
      */
-    function transferAssetOwnership(uint256 assetId, address newOwner)
-        external
-        onlyTokenizer
-        whenNotPaused
-        assetExists(assetId)
-    {
+    function transferAssetOwnership(
+        uint256 assetId,
+        address newOwner
+    ) external onlyTokenizer whenNotPaused assetExists(assetId) {
         if (newOwner == address(0)) revert InvalidNewOwnerAddress();
 
         AssetRecord storage rec = _assets[assetId];
-        address previousOwner   = rec.assetOwner;
+        address previousOwner = rec.assetOwner;
         if (previousOwner == newOwner) return;
 
         rec.assetOwner = newOwner;
@@ -305,34 +280,27 @@ contract VaulticAssetRegistry is
      * @param newMetadataURI URI for fresh legal/valuation docs.
      */
     function relistAsset(
-        uint256         assetId,
-        uint128         newValuation,
+        uint256 assetId,
+        uint128 newValuation,
         string calldata newMetadataURI
-    )
-        external
-        onlyTokenizer
-        whenNotPaused
-        assetExists(assetId)
-    {
-        if (newValuation == 0)                 revert InvalidValuation(0);
+    ) external onlyTokenizer whenNotPaused assetExists(assetId) {
+        if (newValuation == 0) revert InvalidValuation(0);
         if (bytes(newMetadataURI).length == 0) revert EmptyStringField("metadataURI");
 
         AssetRecord storage rec = _assets[assetId];
-        if (rec.state != AssetState.CLOSED)
-            revert AssetNotClosedForRelisting(assetId, rec.state);
-        if (rec.model != OwnershipModel.FRACTIONAL)
-            revert OwnershipModelMismatch(assetId, rec.model);
+        if (rec.state != AssetState.CLOSED) revert AssetNotClosedForRelisting(assetId, rec.state);
+        if (rec.model != OwnershipModel.FRACTIONAL) revert OwnershipModelMismatch(assetId, rec.model);
 
-        rec.state         = AssetState.RELISTED;
-        rec.valuation     = newValuation;
-        rec.metadataURI   = newMetadataURI;
-        rec.soldShares    = 0;
-        rec.totalShares   = 0;
+        rec.state = AssetState.RELISTED;
+        rec.valuation = newValuation;
+        rec.metadataURI = newMetadataURI;
+        rec.soldShares = 0;
+        rec.totalShares = 0;
         rec.pricePerShare = 0;
-        rec.tokenizedAt   = 0;
-        uint32 newCount   = rec.relistCount + 1;
-        rec.relistCount  = newCount;
-        rec.relistedAt   = uint48(block.timestamp);
+        rec.tokenizedAt = 0;
+        uint32 newCount = rec.relistCount + 1;
+        rec.relistCount = newCount;
+        rec.relistedAt = uint48(block.timestamp);
 
         emit AssetRelisted(assetId, rec.assetOwner, newValuation, newCount);
     }
@@ -374,7 +342,7 @@ contract VaulticAssetRegistry is
         uint256 assetId
     ) external view assetExists(assetId) returns (uint128 soldShares, uint128 totalShares) {
         AssetRecord storage rec = _assets[assetId];
-        soldShares  = rec.soldShares;
+        soldShares = rec.soldShares;
         totalShares = rec.totalShares;
     }
 
@@ -383,12 +351,7 @@ contract VaulticAssetRegistry is
      * @param assetId Asset to query.
      * @return count Relist count.
      */
-    function getRelistCount(uint256 assetId)
-        external
-        view
-        assetExists(assetId)
-        returns (uint32 count)
-    {
+    function getRelistCount(uint256 assetId) external view assetExists(assetId) returns (uint32 count) {
         count = _assets[assetId].relistCount;
     }
 
@@ -406,31 +369,26 @@ contract VaulticAssetRegistry is
      * @param current Current state.
      * @param requested Requested next state.
      */
-    function _requireTransition(
-        uint256    assetId,
-        AssetState current,
-        AssetState requested
-    ) internal pure {
+    function _requireTransition(uint256 assetId, AssetState current, AssetState requested) internal pure {
         bool valid;
-        if (current == AssetState.PENDING   && requested == AssetState.ACTIVE)     valid = true;
-        if (current == AssetState.ACTIVE    && requested == AssetState.TOKENIZED)  valid = true;
-        if (current == AssetState.ACTIVE    && requested == AssetState.CLOSED)     valid = true;
-        if (current == AssetState.TOKENIZED && requested == AssetState.CLOSED)     valid = true;
-        if (current == AssetState.CLOSED    && requested == AssetState.RELISTED)   valid = true;
-        if (current == AssetState.RELISTED  && requested == AssetState.TOKENIZED)  valid = true;
+        if (current == AssetState.PENDING && requested == AssetState.ACTIVE) valid = true;
+        if (current == AssetState.ACTIVE && requested == AssetState.TOKENIZED) valid = true;
+        if (current == AssetState.ACTIVE && requested == AssetState.CLOSED) valid = true;
+        if (current == AssetState.TOKENIZED && requested == AssetState.CLOSED) valid = true;
+        if (current == AssetState.CLOSED && requested == AssetState.RELISTED) valid = true;
+        if (current == AssetState.RELISTED && requested == AssetState.TOKENIZED) valid = true;
 
         if (!valid) revert InvalidStateTransition(assetId, current, requested);
     }
-     
-     /////////////////////////////////////////
-     //////// OZ Natives /////////////////////
-     /////////////////////////////////////////
+
+    /////////////////////////////////////////
+    //////// OZ Natives /////////////////////
+    /////////////////////////////////////////
     /**
      * @dev UUPS hook; restricts upgrades to owner.
      * @param newImplementation New implementation contract address.
      */
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
-
 
     /// @notice Pauses all state-changing operations. Emergency circuit breaker.
     function pause() external onlyOwner {
