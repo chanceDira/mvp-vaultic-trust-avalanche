@@ -1,19 +1,53 @@
+import type { Address } from "viem";
 import * as chains from "viem/chains";
 
+/** Proxy + implementation addresses for a contract. */
+export type ProxyContractAddresses = {
+  proxy: Address;
+  implementation: Address;
+};
+
+/** Implementation-only (e.g. fractional token implementation). */
+export type ImplementationAddress = {
+  implementation: Address;
+};
+
+/** Single-address contract (e.g. payment token). */
+export type SingleContractAddress = {
+  address: Address;
+};
+
+/** Typed deployed contract addresses per chain. */
+export type DeployedContractAddresses = {
+  VaulticAssetRegistry: ProxyContractAddresses;
+  VaulticInvestmentManager: ProxyContractAddresses;
+  VaulticFractionalOwnershipToken: ImplementationAddress;
+  MockERC20: SingleContractAddress;
+};
+
+/** Contract addresses by chain ID. Proxies are the app endpoints; implementations for verification/upgrades. */
+export const deployedContractAddresses: Partial<Record<number, DeployedContractAddresses>> = {
+  [chains.avalancheFuji.id]: {
+    VaulticAssetRegistry: {
+      proxy: "0x89dAc7d94e07609F281138Db9EAA8A2A483A1464",
+      implementation: "0x15AD832cF700558e8A0919E36eEA032a477cA6ad",
+    },
+    VaulticInvestmentManager: {
+      proxy: "0x87Ba556D63e1b6FD7C82ba024118249F235934E3",
+      implementation: "0xeFeBF5385e7774A9eE144Fe21e3ccd3c06B3C94f",
+    },
+    VaulticFractionalOwnershipToken: {
+      implementation: "0x607b282F23C2e357Bf320EAbE50e0Ea3Aa45274F",
+    },
+    MockERC20: {
+      address: "0x2082E20F621c5Dd9CbEF0288E6A695523c93A941",
+    },
+  },
+  // [chains.avalanche.id]: { ... } — add when mainnet is deployed
+};
+
 /**
- * Vaultic Trust – scaffold config.
- *
- * Deployed contract addresses (proxy and implementation) per network are in:
- * - packages/nextjs/contracts/deployedContracts.ts (source of truth for the app)
- * - README.md "Deployed contracts" section (for humans)
- *
- * Avalanche Fuji (43113) deployment (example):
- * - VaulticAssetRegistry (proxy): 0x89dAc7d94e07609F281138Db9EAA8A2A483A1464
- * - VaulticAssetRegistry (impl):  0x15AD832cF700558e8A0919E36eEA032a477cA6ad
- * - VaulticInvestmentManager (proxy): 0x87Ba556D63e1b6FD7C82ba024118249F235934E3
- * - VaulticInvestmentManager (impl):  0xeFeBF5385e7774A9eE144Fe21e3ccd3c06B3C94f
- * - VaulticFractionalOwnershipToken (impl): 0x607b282F23C2e357Bf320EAbE50e0Ea3Aa45274F
- * - MockERC20: 0x2082E20F621c5Dd9CbEF0288E6A695523c93A941
+ * Vaultic Trust – network and wallet configuration.
  */
 export type BaseConfig = {
   targetNetworks: readonly chains.Chain[];
