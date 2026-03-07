@@ -15,8 +15,28 @@ export default function OwnerPage() {
     functionName: "getAssetsByOwner",
     args: address ? [address] : undefined,
   });
+  const { data: registryOwner } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "owner",
+  });
+  const { data: investmentManagerOwner } = useScaffoldReadContract({
+    contractName: "VaulticInvestmentManager",
+    functionName: "owner",
+  });
+
+  const { data: totalAssets } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "totalAssets",
+  });
 
   const ids = (assetIds as bigint[] | undefined) ?? [];
+  const total = totalAssets !== undefined ? Number(totalAssets) : 0;
+  const allIds = Array.from({ length: Math.min(total, 50) }, (_, i) => BigInt(i + 1));
+  const isRegistryOwner =
+    !!address && !!registryOwner && address.toLowerCase() === (registryOwner as string).toLowerCase();
+  const isInvestmentManagerOwner =
+    !!address && !!investmentManagerOwner && address.toLowerCase() === (investmentManagerOwner as string).toLowerCase();
+  const isProtocolOwner = isRegistryOwner || isInvestmentManagerOwner;
 
   return (
     <div className="flex flex-col grow">
@@ -76,9 +96,40 @@ export default function OwnerPage() {
               ) : (
                 <div className="space-y-4">
                   {ids.map(id => (
-                    <AssetCard key={id.toString()} assetId={id} showInvestmentPanel={false} />
+                    <AssetCard
+                      key={id.toString()}
+                      assetId={id}
+                      showInvestmentPanel={false}
+                      showTokenizationActions
+                      isRegistryOwner={isRegistryOwner}
+                      isInvestmentManagerOwner={isInvestmentManagerOwner}
+                    />
                   ))}
                 </div>
+              )}
+
+              {isProtocolOwner && total > 0 && (
+                <>
+                  <h2 className="text-xl font-bold text-base-content mt-10 mb-4">
+                    All listed assets (approve or tokenize)
+                  </h2>
+                  <p className="text-sm text-base-content/70 mb-4">
+                    As registry or investment manager owner, you can approve pending assets and tokenize active
+                    fractional assets below.
+                  </p>
+                  <div className="space-y-4">
+                    {allIds.map(id => (
+                      <AssetCard
+                        key={id.toString()}
+                        assetId={id}
+                        showInvestmentPanel={false}
+                        showTokenizationActions
+                        isRegistryOwner={isRegistryOwner}
+                        isInvestmentManagerOwner={isInvestmentManagerOwner}
+                      />
+                    ))}
+                  </div>
+                </>
               )}
             </>
           )}
