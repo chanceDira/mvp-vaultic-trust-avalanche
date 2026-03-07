@@ -77,6 +77,8 @@ Canonical addresses per network. Proxies are the application’s contract endpoi
 | VaulticFractionalOwnershipToken | Implementation | `0x607b282F23C2e357Bf320EAbE50e0Ea3Aa45274F` |
 | MockERC20 | Payment token | `0x2082E20F621c5Dd9CbEF0288E6A695523c93A941` |
 
+**Why only an implementation for the fractional token?** The fractional token is deployed once as a singleton implementation. The InvestmentManager creates a **new EIP-1167 minimal proxy (clone)** for each asset when you call `tokenizeAsset()`. Those per-asset proxy addresses are not fixed at deploy time; they are stored in the registry and in the investment pool (`tokenContract` per asset).
+
 ### Avalanche C-Chain (mainnet)
 
 Deploy with `yarn deploy --network avalanche` and update this section with the new addresses. `deployedContracts.ts` is regenerated on deploy.

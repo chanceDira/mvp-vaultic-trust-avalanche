@@ -50,8 +50,8 @@ export function TokenizationActions({
   const state = rec.state;
   const model = rec.model;
 
-  const showApprove = state === ASSET_STATE_PENDING && isRegistryOwner;
-  const showTokenize = state === ASSET_STATE_ACTIVE && model === MODEL_FRACTIONAL && isInvestmentManagerOwner;
+  const showApprove = state === ASSET_STATE_PENDING;
+  const showTokenize = state === ASSET_STATE_ACTIVE && model === MODEL_FRACTIONAL;
 
   if (!showApprove && !showTokenize) return null;
 
@@ -111,10 +111,13 @@ export function TokenizationActions({
           <p className="text-sm text-base-content/70 mb-2">
             This asset is pending. Approve it so it can be tokenized and opened for investment.
           </p>
+          {!isRegistryOwner && (
+            <p className="text-xs text-warning mb-2">Only the registry owner can approve. Connect with that wallet.</p>
+          )}
           <button
             type="button"
             className="btn btn-primary btn-sm gap-2"
-            disabled={isApproveMining}
+            disabled={isApproveMining || !isRegistryOwner}
             onClick={handleApprove}
           >
             <CheckCircleIcon className="h-4 w-4" />
@@ -128,6 +131,11 @@ export function TokenizationActions({
           <p className="text-sm text-base-content/70">
             Deploy a fractional token and open this asset for investment. Price is in payment token units (6 decimals).
           </p>
+          {!isInvestmentManagerOwner && (
+            <p className="text-xs text-warning">
+              Only the investment manager owner can tokenize. Connect with that wallet.
+            </p>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="text-xs font-medium text-base-content/70">Total shares</label>
@@ -168,6 +176,7 @@ export function TokenizationActions({
             className="btn btn-primary btn-sm"
             disabled={
               isTokenizeMining ||
+              !isInvestmentManagerOwner ||
               !totalShares ||
               !pricePerShare ||
               Number(totalShares) <= 0 ||

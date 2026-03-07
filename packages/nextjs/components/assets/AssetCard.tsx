@@ -107,7 +107,7 @@ export function AssetCard({
             <InvestmentPanel assetId={assetId} pricePerShare={rec.pricePerShare} assetName={rec.assetName} />
           </div>
         )}
-      {showTokenizationActions && (isRegistryOwner || isInvestmentManagerOwner) && (
+      {showTokenizationActions && (
         <TokenizationActions
           assetId={assetId}
           isRegistryOwner={isRegistryOwner}
