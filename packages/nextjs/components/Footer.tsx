@@ -17,7 +17,7 @@ export const Footer = () => {
       <aside className="grid-flow-col items-center gap-4 md:place-self-start md:justify-self-start">
         <p className="font-semibold text-primary">Vaultic Trust</p>
         <p className="text-sm opacity-80 max-w-xs">
-          Tokenizing Africa&apos;s real economy with trust, transparency, and traceability.
+          Tokenizing Africa&apos;s real economy with trust, transparency, and traceability. Built on Avalanche C-Chain.
         </p>
       </aside>
       <nav className="grid-flow-col gap-4 md:place-self-center">

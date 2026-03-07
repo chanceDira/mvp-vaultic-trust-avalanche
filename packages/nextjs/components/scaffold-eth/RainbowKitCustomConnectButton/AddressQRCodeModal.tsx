@@ -2,6 +2,7 @@ import { Address } from "@scaffold-ui/components";
 import { QRCodeSVG } from "qrcode.react";
 import { Address as AddressType } from "viem";
 import { hardhat } from "viem/chains";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 type AddressQRCodeModalProps = {
@@ -19,8 +20,12 @@ export const AddressQRCodeModal = ({ address, modalId }: AddressQRCodeModalProps
           <label className="modal-box relative">
             {/* dummy input to capture event onclick on modal box */}
             <input className="h-0 w-0 absolute top-0 left-0" />
-            <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
-              ✕
+            <label
+              htmlFor={`${modalId}`}
+              className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3"
+              aria-label="Close"
+            >
+              <XMarkIcon className="h-5 w-5" />
             </label>
             <div className="space-y-3 py-6">
               <div className="flex flex-col items-center gap-6">

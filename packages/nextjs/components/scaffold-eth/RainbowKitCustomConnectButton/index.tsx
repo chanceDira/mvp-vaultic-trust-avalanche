@@ -32,7 +32,16 @@ export const RainbowKitCustomConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <button className="btn btn-primary btn-sm" onClick={openConnectModal} type="button">
+                  <button
+                    className="btn btn-primary btn-sm"
+                    type="button"
+                    onClick={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      openConnectModal?.();
+                    }}
+                    aria-label="Connect wallet"
+                  >
                     Connect Wallet
                   </button>
                 );
