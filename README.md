@@ -12,8 +12,6 @@ Built with Next.js, RainbowKit, Hardhat, Wagmi, Viem, and TypeScript.
 - **Investors**: Browse the marketplace and invest in whole assets or fractions; ownership is on-chain.
 - **Stack**: Next.js (App Router), TailwindCSS, DaisyUI, Solidity on **Avalanche C-Chain** and Fuji testnet.
 
-See [CLAUDE.md](CLAUDE.md), [AGENTS.md](AGENTS.md), [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md), and [SMART_CONTRACTS.md](SMART_CONTRACTS.md) for architecture and contract details.
-
 ---
 
 ## Requirements
@@ -104,8 +102,6 @@ Deploy with `yarn deploy --network avalanche` and update this section with the n
 
 - `packages/hardhat/` – Solidity contracts, deploy scripts, tests
 - `packages/nextjs/` – Next.js app (App Router), UI, generated contract data
-- `AGENTS.md`, `CLAUDE.md`, `SYSTEM_ARCHITECTURE.md`, `SMART_CONTRACTS.md` – product and technical docs
-
 ---
 
 ## Configuration
