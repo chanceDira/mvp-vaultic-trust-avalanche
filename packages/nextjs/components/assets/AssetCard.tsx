@@ -3,6 +3,7 @@
 import { Address } from "@scaffold-ui/components";
 import { InvestmentPanel } from "~~/components/assets/InvestmentPanel";
 import { TokenProgressBar } from "~~/components/assets/TokenProgressBar";
+import { TokenizationActions } from "~~/components/assets/TokenizationActions";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const ASSET_STATE_LABELS: Record<number, string> = {
@@ -21,9 +22,19 @@ const MODEL_LABELS: Record<number, string> = {
 type AssetCardProps = {
   assetId: bigint;
   showInvestmentPanel?: boolean;
+  /** Show Approve/Tokenize actions for protocol owners (owner dashboard). */
+  showTokenizationActions?: boolean;
+  isRegistryOwner?: boolean;
+  isInvestmentManagerOwner?: boolean;
 };
 
-export function AssetCard({ assetId, showInvestmentPanel = false }: AssetCardProps) {
+export function AssetCard({
+  assetId,
+  showInvestmentPanel = false,
+  showTokenizationActions = false,
+  isRegistryOwner = false,
+  isInvestmentManagerOwner = false,
+}: AssetCardProps) {
   const { data: asset, isLoading } = useScaffoldReadContract({
     contractName: "VaulticAssetRegistry",
     functionName: "getAsset",
@@ -96,6 +107,14 @@ export function AssetCard({ assetId, showInvestmentPanel = false }: AssetCardPro
             <InvestmentPanel assetId={assetId} pricePerShare={rec.pricePerShare} assetName={rec.assetName} />
           </div>
         )}
+      {showTokenizationActions && (isRegistryOwner || isInvestmentManagerOwner) && (
+        <TokenizationActions
+          assetId={assetId}
+          isRegistryOwner={isRegistryOwner}
+          isInvestmentManagerOwner={isInvestmentManagerOwner}
+          assetOverride={{ state: rec.state, model: rec.model, valuation: rec.valuation }}
+        />
+      )}
     </div>
   );
 }
