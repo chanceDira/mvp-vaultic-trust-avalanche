@@ -12,10 +12,8 @@ type ChainAttributes = {
 export type ChainWithAttributes = chains.Chain & Partial<ChainAttributes>;
 export type AllowedChainIds = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
-// Mapping of chainId to RPC chain name and format followed by alchemy and infura (Avalanche not on Alchemy)
+// Mapping of chainId to RPC chain name and format followed by alchemy and infura (Avalanche uses rpcOverrides in scaffold.config)
 export const RPC_CHAIN_NAMES: Record<number, string> = {
-  [chains.avalanche.id]: "avalanche",
-  [chains.avalancheFuji.id]: "avalanche-fuji",
   [chains.mainnet.id]: "eth-mainnet",
   [chains.goerli.id]: "eth-goerli",
   [chains.sepolia.id]: "eth-sepolia",
