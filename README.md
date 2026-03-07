@@ -1,100 +1,134 @@
-# 🏗 Scaffold-ETH 2
+# Vaultic Trust
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+**Tokenize Africa's real economy.** Compliant RWA tokenization for Rwanda and Africa. Fractionalize real estate, commodities, carbon credits, and infrastructure into programmable, liquid digital assets on Avalanche.
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+Built with [Scaffold-ETH 2](https://docs.scaffoldeth.io): Next.js, RainbowKit, Hardhat, Wagmi, Viem, TypeScript.
 
-> [!NOTE]
-> 🤖 Scaffold-ETH 2 is AI-ready! It has everything agents need to build on Ethereum. Check `.agents/`, `.claude/`, `.opencode` or `.cursor/` for more info.
+---
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+## What it does
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+- **Asset owners**: Submit real-world assets, choose whole-asset sale or fractional tokenization.
+- **Investors**: Browse the marketplace, invest in whole assets or buy fractions; ownership is on-chain.
+- **Stack**: Next.js (App Router), TailwindCSS, DaisyUI, Solidity on **Avalanche C-Chain** (and Fuji testnet).
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+See [CLAUDE.md](CLAUDE.md), [AGENTS.md](AGENTS.md), [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md), and [SMART_CONTRACTS.md](SMART_CONTRACTS.md) for product and contract details.
+
+---
 
 ## Requirements
 
-Before you begin, you need to install the following tools:
-
 - [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
+- [Yarn](https://classic.yarnpkg.com/en/docs/install/) (v1 or v2+)
 - [Git](https://git-scm.com/downloads)
 
-## Dependency installation
+---
 
-This repo uses **Yarn workspaces**. Install dependencies **from the repository root** so all packages (`packages/hardhat`, `packages/nextjs`) are installed together:
+## Install
+
+From the repo root (Yarn workspaces):
 
 ```bash
-# From repo root (recommended)
 yarn install
 ```
 
-If you see a cache error (e.g. `ENOENT` on a cache file), refresh the cache and reinstall:
+If you see a cache error, refresh and reinstall:
 
 ```bash
 yarn install:refresh
 ```
 
-You can run `yarn install` from `packages/hardhat` or `packages/nextjs` as well; Yarn will use the root workspace and install everything. The lockfile lives at the root.
+---
 
-## Quickstart
+## Quick start
 
-To get started with Scaffold-ETH 2, follow the steps below:
+1. **Local chain** (terminal 1):
 
-1. Install dependencies if it was skipped in CLI:
+   ```bash
+   yarn chain
+   ```
 
-```
-cd my-dapp-example
-yarn install
-```
+2. **Deploy contracts** (terminal 2, after chain is up):
 
-2. Run a local network in the first terminal:
+   ```bash
+   yarn deploy
+   ```
 
-```
-yarn chain
-```
+   For Avalanche Fuji testnet:
 
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/hardhat/hardhat.config.ts`.
+   ```bash
+   yarn deploy --network avalancheFuji
+   ```
 
-3. On a second terminal, deploy the test contract:
+   For Avalanche C-Chain mainnet:
 
-```
-yarn deploy
-```
+   ```bash
+   yarn deploy --network avalanche
+   ```
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
+3. **Frontend** (terminal 3):
 
-4. On a third terminal, start your NextJS app:
+   ```bash
+   yarn start
+   ```
 
-```
-yarn start
-```
+   Open [http://localhost:3000](http://localhost:3000). Connect your wallet (Avalanche/Fuji or local).
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+---
 
-Run smart contract test with `yarn hardhat:test`
+## Deployed contracts
 
-- Edit your smart contracts in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
+Addresses are also written to `packages/nextjs/contracts/deployedContracts.ts` by the deploy script. The app reads from that file.
 
+### Avalanche Fuji (testnet, chain ID 43113)
 
-## Documentation
+| Contract | Role | Address |
+|----------|------|---------|
+| **VaulticAssetRegistry** | Proxy (use this in the app) | `0x89dAc7d94e07609F281138Db9EAA8A2A483A1464` |
+| VaulticAssetRegistry_Implementation | Implementation | `0x15AD832cF700558e8A0919E36eEA032a477cA6ad` |
+| **VaulticInvestmentManager** | Proxy (use this in the app) | `0x87Ba556D63e1b6FD7C82ba024118249F235934E3` |
+| VaulticInvestmentManager_Implementation | Implementation | `0xeFeBF5385e7774A9eE144Fe21e3ccd3c06B3C94f` |
+| VaulticFractionalOwnershipToken | Implementation (template) | `0x607b282F23C2e357Bf320EAbE50e0Ea3Aa45274F` |
+| MockERC20 | Test token | `0x2082E20F621c5Dd9CbEF0288E6A695523c93A941` |
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+Use the **proxy** addresses for `VaulticAssetRegistry` and `VaulticInvestmentManager` in the UI and integrations. Implementation addresses are for upgradeability and verification.
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+### Avalanche C-Chain (mainnet)
 
-## Contributing to Scaffold-ETH 2
+Deploy with `yarn deploy --network avalanche` when ready. Then update this table and `deployedContracts.ts` will be regenerated.
 
-We welcome contributions to Scaffold-ETH 2!
+---
 
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `yarn chain` | Start local Hardhat chain |
+| `yarn deploy` | Deploy contracts (default: local). Use `--network avalancheFuji` or `--network avalanche` for testnet/mainnet |
+| `yarn start` | Run Next.js app at http://localhost:3000 |
+| `yarn compile` | Compile Solidity contracts |
+| `yarn hardhat:test` | Run contract tests |
+| `yarn lint` | Lint packages |
+| `yarn format` | Format code |
+
+---
+
+## Project layout
+
+- `packages/hardhat/` – Solidity contracts, deploy scripts, tests
+- `packages/nextjs/` – Next.js app (App Router), UI, `contracts/deployedContracts.ts` (generated)
+- `AGENTS.md`, `CLAUDE.md`, `SYSTEM_ARCHITECTURE.md`, `SMART_CONTRACTS.md` – product and contract docs
+
+---
+
+## Configuration
+
+- **Networks**: `packages/nextjs/scaffold.config.ts` (target networks, RPC overrides).
+- **Contract addresses**: Generated into `packages/nextjs/contracts/deployedContracts.ts` on deploy; do not edit by hand.
+- **Hardhat networks**: `packages/hardhat/hardhat.config.ts` (e.g. `avalanche`, `avalancheFuji`).
+
+---
+
+## License
+
+See repository license. Vaultic Trust – tokenizing Africa's real economy with trust, transparency, and traceability.
