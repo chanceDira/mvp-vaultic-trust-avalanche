@@ -74,14 +74,12 @@ const Home: NextPage = () => {
               Get Early Access
               <ArrowRightIcon className="h-5 w-5 shrink-0" />
             </Link>
-            <a
-              href="https://vaultictrust.com"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href="/litepaper"
               className="btn btn-outline btn-lg min-h-12 flex flex-1 items-center justify-center rounded-xl border-2 border-base-content/20 px-6 text-base-content hover:bg-base-200 hover:border-base-content/30 sm:min-w-[200px] sm:flex-initial sm:flex-none sm:px-8 md:min-w-[220px] md:px-10"
             >
               Read the Litepaper
-            </a>
+            </Link>
           </div>
           <p className="mt-10 text-sm font-medium tracking-wide text-base-content/60 sm:mt-12">
             Compliance-first · KYC/AML · Auditable

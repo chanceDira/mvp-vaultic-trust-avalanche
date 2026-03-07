@@ -1,5 +1,20 @@
 import * as chains from "viem/chains";
 
+/**
+ * Vaultic Trust – scaffold config.
+ *
+ * Deployed contract addresses (proxy and implementation) per network are in:
+ * - packages/nextjs/contracts/deployedContracts.ts (source of truth for the app)
+ * - README.md "Deployed contracts" section (for humans)
+ *
+ * Avalanche Fuji (43113) deployment (example):
+ * - VaulticAssetRegistry (proxy): 0x89dAc7d94e07609F281138Db9EAA8A2A483A1464
+ * - VaulticAssetRegistry (impl):  0x15AD832cF700558e8A0919E36eEA032a477cA6ad
+ * - VaulticInvestmentManager (proxy): 0x87Ba556D63e1b6FD7C82ba024118249F235934E3
+ * - VaulticInvestmentManager (impl):  0xeFeBF5385e7774A9eE144Fe21e3ccd3c06B3C94f
+ * - VaulticFractionalOwnershipToken (impl): 0x607b282F23C2e357Bf320EAbE50e0Ea3Aa45274F
+ * - MockERC20: 0x2082E20F621c5Dd9CbEF0288E6A695523c93A941
+ */
 export type BaseConfig = {
   targetNetworks: readonly chains.Chain[];
   pollingInterval: number;
