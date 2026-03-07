@@ -1,14 +1,24 @@
+"use client";
+
 import Link from "next/link";
-import type { NextPage } from "next";
+import { useAccount } from "wagmi";
 import { WalletIcon } from "@heroicons/react/24/outline";
-import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+import { AssetCard } from "~~/components/assets/AssetCard";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
-export const metadata = getMetadata({
-  title: "Investor",
-  description: "View your portfolio and tokenized asset holdings on Vaultic Trust.",
-});
+const MAX_ASSETS = 50;
 
-const InvestorPage: NextPage = () => {
+export default function InvestorPage() {
+  const { address } = useAccount();
+  const { data: totalAssets, isLoading: isLoadingTotal } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "totalAssets",
+  });
+
+  const total = totalAssets !== undefined ? Number(totalAssets) : 0;
+  const ids = Array.from({ length: Math.min(total, MAX_ASSETS) }, (_, i) => BigInt(i + 1));
+
   return (
     <div className="flex flex-col grow">
       <section className="px-4 py-8 md:py-12">
@@ -23,23 +33,68 @@ const InvestorPage: NextPage = () => {
             View your whole-asset and fractional token holdings. Funding progress is shown per asset.
           </p>
 
-          <div className="card bg-base-100 border border-base-300 shadow-sm">
-            <div className="card-body">
-              <h2 className="card-title text-lg">Your holdings</h2>
-              <p className="text-base-content/70 text-sm">
-                Connect your wallet to see your tokenized asset positions and funding progress.
-              </p>
-              <div className="mt-4">
-                <Link href="/marketplace" className="btn btn-primary gap-2">
-                  Browse marketplace
-                </Link>
+          {!address ? (
+            <div className="rounded-2xl border border-base-300 bg-base-100 p-8 sm:p-10 text-center">
+              <div className="w-14 h-14 rounded-full bg-base-200 flex items-center justify-center mx-auto mb-4">
+                <WalletIcon className="h-7 w-7 text-base-content/60" />
               </div>
+              <h2 className="text-xl font-bold text-base-content">Connect your wallet</h2>
+              <p className="mt-2 text-base-content/70 max-w-md mx-auto">
+                Connect your wallet to view your tokenized asset positions and funding progress.
+              </p>
+              <div className="mt-6">
+                <RainbowKitCustomConnectButton />
+              </div>
+              <p className="mt-6 text-sm text-base-content/60">
+                <Link href="/marketplace" className="link link-primary">
+                  Browse the marketplace
+                </Link>{" "}
+                to invest in assets.
+              </p>
             </div>
+          ) : isLoadingTotal ? (
+            <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center">
+              <span className="loading loading-spinner loading-md" />
+            </div>
+          ) : (
+            <InvestorHoldingsList address={address as `0x${string}`} assetIds={ids} />
+          )}
+
+          <div className="mt-8">
+            <Link href="/marketplace" className="btn btn-primary gap-2">
+              Browse marketplace
+            </Link>
           </div>
         </div>
       </section>
     </div>
   );
-};
+}
 
-export default InvestorPage;
+function InvestorHoldingsList({ address, assetIds }: { address: `0x${string}`; assetIds: bigint[] }) {
+  return (
+    <div className="space-y-4">
+      {assetIds.map(assetId => (
+        <InvestorHoldingRow key={assetId.toString()} assetId={assetId} address={address} />
+      ))}
+    </div>
+  );
+}
+
+function InvestorHoldingRow({ assetId, address }: { assetId: bigint; address: `0x${string}` }) {
+  const { data: holdings } = useScaffoldReadContract({
+    contractName: "VaulticInvestmentManager",
+    functionName: "investorHoldings",
+    args: [assetId, address],
+  });
+
+  const amount = (holdings as bigint | undefined) ?? 0n;
+  if (amount === 0n) return null;
+
+  return (
+    <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+      <p className="text-xs font-medium text-primary/80 mb-2">Your shares: {amount.toString()}</p>
+      <AssetCard assetId={assetId} showInvestmentPanel={false} />
+    </div>
+  );
+}

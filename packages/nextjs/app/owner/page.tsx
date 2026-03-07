@@ -1,14 +1,22 @@
+"use client";
+
 import Link from "next/link";
-import type { NextPage } from "next";
-import { BuildingOffice2Icon, PlusCircleIcon } from "@heroicons/react/24/outline";
-import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+import { useAccount } from "wagmi";
+import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
+import { AssetCard } from "~~/components/assets/AssetCard";
+import { AssetForm } from "~~/components/assets/AssetForm";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
-export const metadata = getMetadata({
-  title: "Owner",
-  description: "Submit and manage your tokenized real-world assets on Vaultic Trust.",
-});
+export default function OwnerPage() {
+  const { address } = useAccount();
+  const { data: assetIds, isLoading: isLoadingIds } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "getAssetsByOwner",
+    args: address ? [address] : undefined,
+  });
 
-const OwnerPage: NextPage = () => {
+  const ids = (assetIds as bigint[] | undefined) ?? [];
+
   return (
     <div className="flex flex-col grow">
       <section className="px-4 py-8 md:py-12">
@@ -23,27 +31,36 @@ const OwnerPage: NextPage = () => {
             Submit real-world assets with documentation. Choose whole-asset sale or fractional tokenization.
           </p>
 
-          <div className="card bg-base-100 border border-base-300 shadow-sm">
-            <div className="card-body">
-              <h2 className="card-title text-lg">Your assets</h2>
-              <p className="text-base-content/70 text-sm">
-                Assets you list will appear here with funding status. Connect your wallet to get started.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                <button className="btn btn-primary gap-2" disabled>
-                  <PlusCircleIcon className="h-5 w-5" />
-                  List new asset (coming soon)
-                </button>
-                <Link href="/marketplace" className="btn btn-ghost gap-2">
-                  Browse marketplace
-                </Link>
-              </div>
-            </div>
+          <div className="mb-8">
+            <AssetForm />
           </div>
+
+          <h2 className="text-xl font-bold text-base-content mb-4">Your assets</h2>
+          {!address ? (
+            <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center text-base-content/70">
+              Connect your wallet to see your assets and register new ones.
+            </div>
+          ) : isLoadingIds ? (
+            <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center">
+              <span className="loading loading-spinner loading-md" />
+            </div>
+          ) : ids.length === 0 ? (
+            <div className="rounded-xl border border-base-300 bg-base-100 p-8 text-center text-base-content/70">
+              No assets yet. Register an asset above or{" "}
+              <Link href="/marketplace" className="link link-primary">
+                browse the marketplace
+              </Link>
+              .
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {ids.map(id => (
+                <AssetCard key={id.toString()} assetId={id} showInvestmentPanel={false} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
   );
-};
-
-export default OwnerPage;
+}
