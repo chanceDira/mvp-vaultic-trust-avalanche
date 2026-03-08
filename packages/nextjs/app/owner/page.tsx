@@ -101,6 +101,7 @@ export default function OwnerPage() {
                       assetId={id}
                       showInvestmentPanel={false}
                       showTokenizationActions
+                      showWithdrawProceeds
                       isRegistryOwner={isRegistryOwner}
                       isInvestmentManagerOwner={isInvestmentManagerOwner}
                     />
@@ -124,6 +125,7 @@ export default function OwnerPage() {
                         assetId={id}
                         showInvestmentPanel={false}
                         showTokenizationActions
+                        showWithdrawProceeds
                         isRegistryOwner={isRegistryOwner}
                         isInvestmentManagerOwner={isInvestmentManagerOwner}
                       />
