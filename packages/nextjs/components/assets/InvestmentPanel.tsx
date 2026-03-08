@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAccount, useWriteContract } from "wagmi";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 const ERC20_APPROVE_ABI = [
   {
@@ -76,24 +76,40 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
       return;
     }
 
+    let loadingId: string | undefined;
     try {
       if (paymentAmount > 0n && paymentTokenAddress) {
+        loadingId = notification.loading("Approving payment token… Confirm in your wallet.");
         await writeApprove({
           address: paymentTokenAddress as `0x${string}`,
           abi: ERC20_APPROVE_ABI,
           functionName: "approve",
           args: [investmentManagerInfo.address as `0x${string}`, paymentAmount],
         });
+        if (loadingId) {
+          notification.remove(loadingId);
+          loadingId = undefined;
+        }
+        notification.success("Approval confirmed. Now confirm the purchase in your wallet.");
+      }
+
+      if (loadingId) {
+        notification.remove(loadingId);
+        loadingId = undefined;
       }
       await writePurchase({
         functionName: "purchaseShares",
         args: [assetId, shareAmountBigInt, paymentAmount],
       });
-      notification.success("Shares purchased");
+      notification.success("Shares purchased.");
       setShareAmount("");
     } catch (e: unknown) {
+      if (loadingId) {
+        notification.remove(loadingId);
+      }
       console.error(e);
-      notification.error("Purchase failed");
+      const message = getParsedError(e);
+      notification.error(message || "Purchase failed.");
     }
   };
 

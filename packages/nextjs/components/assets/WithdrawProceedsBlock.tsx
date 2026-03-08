@@ -3,7 +3,7 @@
 import { useAccount } from "wagmi";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 const PAYMENT_TOKEN_DECIMALS = 6;
 
@@ -35,7 +35,7 @@ export function WithdrawProceedsBlock({ assetId, assetOwner }: WithdrawProceedsB
       notification.success("Proceeds withdrawn");
     } catch (e: unknown) {
       console.error(e);
-      notification.error("Withdraw failed");
+      notification.error(getParsedError(e) || "Withdraw failed.");
     }
   };
 
