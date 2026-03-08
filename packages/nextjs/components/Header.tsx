@@ -5,30 +5,42 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
+import { useAccount } from "wagmi";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
   label: string;
   href: string;
 };
 
-export const menuLinks: HeaderMenuLink[] = [
+const baseMenuLinks: HeaderMenuLink[] = [
   { label: "Home", href: "/" },
   { label: "Owner", href: "/owner" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "Investor", href: "/investor" },
-  { label: "Control panel", href: "/control-panel" },
 ];
+
+const controlPanelLink: HeaderMenuLink = { label: "Control panel", href: "/control-panel" };
+
+export const menuLinks: HeaderMenuLink[] = [...baseMenuLinks];
 
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
+  const { address } = useAccount();
+  const { data: invOwner } = useScaffoldReadContract({
+    contractName: "VaulticInvestmentManager",
+    functionName: "owner",
+  });
+  const isInvOwner = !!address && !!invOwner && address.toLowerCase() === (invOwner as string).toLowerCase();
+  const links = isInvOwner ? [...baseMenuLinks, controlPanelLink] : baseMenuLinks;
 
   return (
     <>
-      {menuLinks.map(({ label, href }) => {
+      {links.map(({ label, href }) => {
         const isActive = pathname === href;
         return (
           <li key={href}>
