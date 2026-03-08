@@ -71,6 +71,10 @@ describe("Relist whole asset", function () {
     const imAsBuyer = investmentManager.connect(await ethers.getSigner(buyer));
     await imAsBuyer.purchaseWholeAsset(assetId);
 
+    const expectedFee = (VALUATION * 50n) / 10_000n;
+    const accumulated = await investmentManager.accumulatedFees();
+    expect(accumulated).to.equal(expectedFee);
+
     const recAfterPurchase = await registry.getAsset(assetId);
     expect(recAfterPurchase.state).to.equal(3); // CLOSED
     expect(recAfterPurchase.assetOwner.toLowerCase()).to.equal(buyer.toLowerCase());
