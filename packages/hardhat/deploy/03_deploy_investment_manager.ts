@@ -14,8 +14,19 @@ const deployInvestmentManager: DeployFunction = async function (hre: HardhatRunt
   const { deploy, get } = hre.deployments;
 
   const registry = await get("VaulticAssetRegistry");
-  const paymentToken = await get("MockERC20");
+  const networkName = hre.network.name;
+
+  // Fuji: use real USDC testnet by default unless overridden
+  const FUJI_USDC = "0x5425890298aed601595a70AB815c96711a31Bc65";
+  const paymentTokenAddress =
+    process.env.PAYMENT_TOKEN_ADDRESS || (networkName === "avalancheFuji" ? FUJI_USDC : undefined);
+
+  const paymentToken = paymentTokenAddress ? { address: paymentTokenAddress } : await get("MockERC20");
   const tokenImpl = await get("VaulticFractionalOwnershipToken");
+
+  if (paymentTokenAddress) {
+    console.log("Using payment token:", paymentTokenAddress, networkName === "avalancheFuji" ? "(Fuji USDC)" : "");
+  }
 
   await deploy("VaulticInvestmentManager", {
     from: deployer,

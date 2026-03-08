@@ -25,6 +25,12 @@ export type DeployedContractAddresses = {
   MockERC20: SingleContractAddress;
 };
 
+/**
+ * Fuji payment token: USDC testnet (used by Investment Manager when deployed with Fuji USDC).
+ * The buy flow reads paymentToken() from VaulticInvestmentManager; no hardcoded MockERC20 on Fuji.
+ */
+export const FUJI_USDC_ADDRESS = "0x5425890298aed601595a70AB815c96711a31Bc65" as const;
+
 /** Contract addresses by chain ID. Proxies are the app endpoints; implementations for verification/upgrades. */
 export const deployedContractAddresses: Partial<Record<number, DeployedContractAddresses>> = {
   [chains.avalancheFuji.id]: {
@@ -39,8 +45,9 @@ export const deployedContractAddresses: Partial<Record<number, DeployedContractA
     VaulticFractionalOwnershipToken: {
       implementation: "0x607b282F23C2e357Bf320EAbE50e0Ea3Aa45274F",
     },
+    // Fuji: payment token is USDC testnet (Investment Manager uses this; buy flow reads paymentToken() from contract).
     MockERC20: {
-      address: "0x2082E20F621c5Dd9CbEF0288E6A695523c93A941",
+      address: FUJI_USDC_ADDRESS,
     },
   },
   // [chains.avalanche.id]: { ... } — add when mainnet is deployed
