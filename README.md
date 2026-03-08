@@ -85,6 +85,8 @@ Canonical addresses per network. Proxies are the application’s contract endpoi
 
 **Why only an implementation for the fractional token?** The fractional token is deployed once as a singleton implementation. The InvestmentManager creates a **new EIP-1167 minimal proxy (clone)** for each asset when you call `tokenizeAsset()`. Those per-asset proxy addresses are not fixed at deploy time; they are stored in the registry and in the investment pool (`tokenContract` per asset).
 
+**Relist reverts with "execution reverted"?** The registry’s `relistWholeAsset` / `relistAssetAsFractional` are callable only by the address set as **tokenizer**. The deploy script sets the registry’s tokenizer to the Investment Manager **proxy** after deploy. If you redeployed only the Investment Manager (e.g. a new proxy on Fuji) and did not re-run the full deploy, the registry may still point to an old address. Fix: as the **registry owner**, call `VaulticAssetRegistry.setTokenizer(VaulticInvestmentManagerProxyAddress)` with the current IM proxy (e.g. `0xcA3EDAfd3344f57e7180ABD051e1bF027498e503` on Fuji). Verify with `registry.tokenizer()` on-chain.
+
 ### Avalanche C-Chain (mainnet)
 
 Deploy with `yarn deploy --network avalanche` and update this section with the new addresses. `deployedContracts.ts` is regenerated on deploy.
