@@ -218,6 +218,7 @@ contract VaulticInvestmentManager is
         uint256 grossCost = uint256(pool.pricePerShare) * shareAmount;
         if (paymentAmount != grossCost) revert PaymentMismatch(grossCost, paymentAmount);
 
+        // fee = floor(grossCost * protocolFeeBps / 10_000); same units as payment token
         uint256 fee = (grossCost * protocolFeeBps) / BPS_DENOMINATOR;
         uint256 netCost = grossCost - fee;
 
@@ -260,6 +261,7 @@ contract VaulticInvestmentManager is
         uint256 grossPayment = uint256(rec.valuation);
         if (grossPayment == 0) revert ZeroPurchaseAmount();
 
+        // fee = floor(grossPayment * protocolFeeBps / 10_000); same units as payment token
         uint256 fee = (grossPayment * protocolFeeBps) / BPS_DENOMINATOR;
         uint256 netToSeller = grossPayment - fee;
 
