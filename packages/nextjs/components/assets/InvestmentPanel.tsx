@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useConfig, useWriteContract } from "wagmi";
+import { getPublicClient } from "wagmi/actions";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
@@ -26,6 +27,7 @@ type InvestmentPanelProps = {
 
 export function InvestmentPanel({ assetId, pricePerShare, assetName }: InvestmentPanelProps) {
   const { address } = useAccount();
+  const config = useConfig();
   const [shareAmount, setShareAmount] = useState("");
   const { data: investmentManagerInfo } = useDeployedContractInfo({
     contractName: "VaulticInvestmentManager",
@@ -79,16 +81,50 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
     let loadingId: string | undefined;
     try {
       if (paymentAmount > 0n && paymentTokenAddress) {
-        loadingId = notification.loading("Approving payment token… Confirm in your wallet.");
-        await writeApprove({
-          address: paymentTokenAddress as `0x${string}`,
+        const spender = investmentManagerInfo.address as `0x${string}`;
+        const tokenAddress = paymentTokenAddress as `0x${string}`;
+        const publicClient = getPublicClient(config);
+
+        // Some tokens (e.g. USDC) require resetting allowance to 0 before setting a new value
+        loadingId = notification.loading("Resetting allowance… Confirm in your wallet.");
+        const resetHash = await writeApprove({
+          address: tokenAddress,
           abi: ERC20_APPROVE_ABI,
           functionName: "approve",
-          args: [investmentManagerInfo.address as `0x${string}`, paymentAmount],
+          args: [spender, 0n],
         });
         if (loadingId) {
           notification.remove(loadingId);
           loadingId = undefined;
+        }
+        if (publicClient && resetHash) {
+          loadingId = notification.loading("Waiting for allowance reset…");
+          await publicClient.waitForTransactionReceipt({ hash: resetHash });
+          if (loadingId) {
+            notification.remove(loadingId);
+            loadingId = undefined;
+          }
+        }
+
+        loadingId = notification.loading("Approving payment token… Confirm in your wallet.");
+        const approveHash = await writeApprove({
+          address: tokenAddress,
+          abi: ERC20_APPROVE_ABI,
+          functionName: "approve",
+          args: [spender, paymentAmount],
+        });
+        if (loadingId) {
+          notification.remove(loadingId);
+          loadingId = undefined;
+        }
+        // Wait for approval to be mined so purchase sees the allowance on-chain
+        if (publicClient && approveHash) {
+          loadingId = notification.loading("Waiting for approval to confirm…");
+          await publicClient.waitForTransactionReceipt({ hash: approveHash });
+          if (loadingId) {
+            notification.remove(loadingId);
+            loadingId = undefined;
+          }
         }
         notification.success("Approval confirmed. Now confirm the purchase in your wallet.");
       }
