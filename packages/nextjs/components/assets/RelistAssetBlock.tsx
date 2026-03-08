@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import { useReadContract } from "wagmi";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useDeployedContractInfo, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 const PAYMENT_TOKEN_DECIMALS = 6;
 const VALUATION_DECIMALS = 6;
@@ -93,7 +93,7 @@ export function RelistAssetBlock({ assetId, tokenContract }: RelistAssetBlockPro
       setNewInvestorCap("0");
     } catch (err: unknown) {
       console.error(err);
-      notification.error("Relist failed");
+      notification.error(getParsedError(err) || "Relist failed.");
     }
   };
 

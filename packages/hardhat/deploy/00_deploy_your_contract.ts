@@ -2,31 +2,31 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
 /**
- * Deploys MockERC20 used as payment token for Vaultic Trust (local / testnets only).
- * For production: set PAYMENT_TOKEN_ADDRESS to a real stablecoin (e.g. USDC on Avalanche)
- * and deploy; the Investment Manager will use that address instead of deploying MockERC20.
- *
- * @param hre HardhatRuntimeEnvironment object.
+ * Payment token for Vaultic Trust.
+ * - Fuji: not deployed; Investment Manager uses Fuji USDC at 0x5425890298aed601595a70AB815c96711a31Bc65.
+ * - Local (Hardhat): deploy a test ERC20 (same interface as USDC, 6 decimals) so the app can run locally.
+ * MockERC20 is not used; we deploy it under the name "PaymentToken" for local only.
  */
-const deployMockPaymentToken: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  if (process.env.PAYMENT_TOKEN_ADDRESS) {
-    console.log("PAYMENT_TOKEN_ADDRESS set; skipping MockERC20 deploy (using existing token)");
+const deployPaymentToken: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  if (hre.network.name === "avalancheFuji") {
+    console.log("avalancheFuji: no payment token deploy (using Fuji USDC)");
     return;
   }
-  if (hre.network.name === "avalancheFuji") {
-    console.log("avalancheFuji: skipping MockERC20 (using Fuji USDC as payment token)");
+  if (process.env.PAYMENT_TOKEN_ADDRESS) {
+    console.log("PAYMENT_TOKEN_ADDRESS set; skipping payment token deploy");
     return;
   }
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("MockERC20", {
+  await deploy("PaymentToken", {
+    contract: "MockERC20",
     from: deployer,
-    args: ["Mock USDC", "USDC", 6],
+    args: ["Test USDC", "USDC", 6],
     log: true,
     autoMine: true,
   });
 };
 
-export default deployMockPaymentToken;
-deployMockPaymentToken.tags = ["MockPaymentToken"];
+export default deployPaymentToken;
+deployPaymentToken.tags = ["PaymentToken"];

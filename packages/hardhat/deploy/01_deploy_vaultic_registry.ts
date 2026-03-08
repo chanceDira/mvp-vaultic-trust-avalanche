@@ -29,4 +29,4 @@ const deployVaulticRegistry: DeployFunction = async function (hre: HardhatRuntim
 
 export default deployVaulticRegistry;
 deployVaulticRegistry.tags = ["VaulticAssetRegistry"];
-deployVaulticRegistry.dependencies = ["MockPaymentToken"];
+deployVaulticRegistry.dependencies = [];

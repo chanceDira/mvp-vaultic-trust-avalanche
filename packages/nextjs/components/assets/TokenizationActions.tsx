@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CheckCircleIcon, CubeIcon } from "@heroicons/react/24/outline";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 const ASSET_STATE_PENDING = 0;
 const ASSET_STATE_ACTIVE = 1;
@@ -61,7 +61,7 @@ export function TokenizationActions({
       notification.success("Asset approved");
     } catch (e: unknown) {
       console.error(e);
-      notification.error("Approve failed");
+      notification.error(getParsedError(e) || "Approve failed.");
     }
   };
 
@@ -95,7 +95,7 @@ export function TokenizationActions({
       setInvestorCap("0");
     } catch (e: unknown) {
       console.error(e);
-      notification.error("Tokenization failed");
+      notification.error(getParsedError(e) || "Tokenization failed.");
     }
   };
 

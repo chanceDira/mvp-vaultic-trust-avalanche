@@ -60,11 +60,11 @@ yarn deploy --network avalancheFuji   # Fuji testnet
 yarn deploy --network avalanche      # Avalanche C-Chain mainnet
 ```
 
-**Payment token: Fuji USDC vs MockERC20**
+**Payment token**
 
-- **Local (Hardhat):** MockERC20 is deployed and used. No change.
-- **Avalanche Fuji:** The deploy script uses **Fuji USDC testnet** (`0x5425890298aed601595a70AB815c96711a31Bc65`) as the payment token by default. MockERC20 is not deployed on Fuji. The frontend reads `paymentToken()` from the Investment Manager, so the buy flow approves and spends whatever token the contract uses (Fuji USDC after a Fuji deploy).
-- **Mainnet:** Set `PAYMENT_TOKEN_ADDRESS` to mainnet USDC (e.g. `0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E`) and run `yarn deploy --network avalanche`. Override Fuji with `PAYMENT_TOKEN_ADDRESS=... yarn deploy --network avalancheFuji` if you ever want a different Fuji token.
+- **Avalanche Fuji:** The app uses **Fuji USDC testnet** only (`0x5425890298aed601595a70AB815c96711a31Bc65`). No mock token is deployed on Fuji; the Investment Manager is deployed with this address. The frontend reads `paymentToken()` from the contract, so the buy flow approves and spends Fuji USDC.
+- **Local (Hardhat):** A test ERC20 is deployed as "PaymentToken" (same interface as USDC, 6 decimals) so you can run the app locally. No MockERC20.
+- **Mainnet:** Set `PAYMENT_TOKEN_ADDRESS` to mainnet USDC (e.g. `0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E`) and run `yarn deploy --network avalanche`.
 
 ---
 
@@ -76,11 +76,11 @@ Canonical addresses per network. Proxies are the application’s contract endpoi
 
 | Contract | Role | Address |
 |----------|------|---------|
-| VaulticAssetRegistry | Proxy | `0x89dAc7d94e07609F281138Db9EAA8A2A483A1464` |
-| VaulticAssetRegistry_Implementation | Implementation | `0x15AD832cF700558e8A0919E36eEA032a477cA6ad` |
-| VaulticInvestmentManager | Proxy | `0x87Ba556D63e1b6FD7C82ba024118249F235934E3` |
-| VaulticInvestmentManager_Implementation | Implementation | `0xeFeBF5385e7774A9eE144Fe21e3ccd3c06B3C94f` |
-| VaulticFractionalOwnershipToken | Implementation | `0x607b282F23C2e357Bf320EAbE50e0Ea3Aa45274F` |
+| VaulticAssetRegistry | Proxy | `0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635` |
+| VaulticAssetRegistry_Implementation | Implementation | `0xEdD288334Fc62eb20AeE69AA0D2870d7a59fED35` |
+| VaulticInvestmentManager | Proxy | `0xcA3EDAfd3344f57e7180ABD051e1bF027498e503` |
+| VaulticInvestmentManager_Implementation | Implementation | `0xf8C54CA047f20C58aeD77F3ddA09A8A677B111DE` |
+| VaulticFractionalOwnershipToken | Implementation | `0x4d8f5709AcD40aC1DB92A32F68DB81a1d5B1C3B9` |
 | Payment token (Fuji USDC) | Used by Investment Manager | `0x5425890298aed601595a70AB815c96711a31Bc65` |
 
 **Why only an implementation for the fractional token?** The fractional token is deployed once as a singleton implementation. The InvestmentManager creates a **new EIP-1167 minimal proxy (clone)** for each asset when you call `tokenizeAsset()`. Those per-asset proxy addresses are not fixed at deploy time; they are stored in the registry and in the investment pool (`tokenContract` per asset).
