@@ -4,6 +4,7 @@ import { Address } from "@scaffold-ui/components";
 import { InvestmentPanel } from "~~/components/assets/InvestmentPanel";
 import { TokenProgressBar } from "~~/components/assets/TokenProgressBar";
 import { TokenizationActions } from "~~/components/assets/TokenizationActions";
+import { WithdrawProceedsBlock } from "~~/components/assets/WithdrawProceedsBlock";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const ASSET_STATE_LABELS: Record<number, string> = {
@@ -24,6 +25,8 @@ type AssetCardProps = {
   showInvestmentPanel?: boolean;
   /** Show Approve/Tokenize actions for protocol owners (owner dashboard). */
   showTokenizationActions?: boolean;
+  /** Show withdraw-proceeds block for asset owners (owner dashboard). */
+  showWithdrawProceeds?: boolean;
   isRegistryOwner?: boolean;
   isInvestmentManagerOwner?: boolean;
 };
@@ -32,6 +35,7 @@ export function AssetCard({
   assetId,
   showInvestmentPanel = false,
   showTokenizationActions = false,
+  showWithdrawProceeds = false,
   isRegistryOwner = false,
   isInvestmentManagerOwner = false,
 }: AssetCardProps) {
@@ -73,6 +77,11 @@ export function AssetCard({
   const stateLabel = ASSET_STATE_LABELS[rec.state] ?? "Unknown";
   const modelLabel = MODEL_LABELS[rec.model] ?? "Unknown";
   const valuationFormatted = rec.valuation ? (Number(rec.valuation) / 1e6).toLocaleString() : "0";
+  const showProceedsBlock =
+    showWithdrawProceeds &&
+    (rec.state === 2 || rec.state === 3) &&
+    !!rec.tokenContract &&
+    rec.tokenContract !== "0x0000000000000000000000000000000000000000";
 
   return (
     <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm transition-shadow hover:shadow-md">
@@ -94,6 +103,13 @@ export function AssetCard({
           <Address address={rec.assetOwner as `0x${string}`} format="short" />
         </span>
       </div>
+      {rec.metadataURI && rec.metadataURI.trim() !== "" && (
+        <p className="mt-2 text-sm">
+          <a href={rec.metadataURI} target="_blank" rel="noopener noreferrer" className="link link-primary">
+            Documentation
+          </a>
+        </p>
+      )}
       {rec.totalShares > 0n && (
         <div className="mt-4">
           <TokenProgressBar soldShares={rec.soldShares} totalShares={rec.totalShares} label="Funding" />
@@ -107,6 +123,7 @@ export function AssetCard({
             <InvestmentPanel assetId={assetId} pricePerShare={rec.pricePerShare} assetName={rec.assetName} />
           </div>
         )}
+      {showProceedsBlock && <WithdrawProceedsBlock assetId={assetId} assetOwner={rec.assetOwner} />}
       {showTokenizationActions && (
         <TokenizationActions
           assetId={assetId}
