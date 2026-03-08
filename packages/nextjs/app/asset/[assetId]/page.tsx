@@ -203,6 +203,21 @@ export default function AssetDetailsPage() {
             <Link href="/marketplace" className="link link-primary">
               Marketplace
             </Link>
+            {" · "}
+            <Link href="/support" className="link link-primary">
+              Support
+            </Link>
+          </p>
+          <p className="mt-2 text-xs text-base-content/50">
+            Buying shares? You&apos;ll confirm 3 transactions in your wallet. See{" "}
+            <Link href="/support" className="link link-hover">
+              Support
+            </Link>{" "}
+            or{" "}
+            <Link href="/terms" className="link link-hover">
+              Terms of Service
+            </Link>{" "}
+            for details.
           </p>
         </div>
       </section>

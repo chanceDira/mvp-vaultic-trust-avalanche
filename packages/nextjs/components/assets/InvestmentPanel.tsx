@@ -86,7 +86,7 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
         const publicClient = getPublicClient(config);
 
         // Some tokens (e.g. USDC) require resetting allowance to 0 before setting a new value
-        loadingId = notification.loading("Resetting allowance… Confirm in your wallet.");
+        loadingId = notification.loading("Step 1 of 3: Resetting allowance. Confirm in your wallet.");
         const resetHash = await writeApprove({
           address: tokenAddress,
           abi: ERC20_APPROVE_ABI,
@@ -98,7 +98,7 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
           loadingId = undefined;
         }
         if (publicClient && resetHash) {
-          loadingId = notification.loading("Waiting for allowance reset…");
+          loadingId = notification.loading("Waiting for step 1 to confirm on-chain…");
           await publicClient.waitForTransactionReceipt({ hash: resetHash });
           if (loadingId) {
             notification.remove(loadingId);
@@ -106,7 +106,7 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
           }
         }
 
-        loadingId = notification.loading("Approving payment token… Confirm in your wallet.");
+        loadingId = notification.loading("Step 2 of 3: Approve payment amount. Confirm in your wallet.");
         const approveHash = await writeApprove({
           address: tokenAddress,
           abi: ERC20_APPROVE_ABI,
@@ -119,14 +119,14 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
         }
         // Wait for approval to be mined so purchase sees the allowance on-chain
         if (publicClient && approveHash) {
-          loadingId = notification.loading("Waiting for approval to confirm…");
+          loadingId = notification.loading("Waiting for step 2 to confirm on-chain…");
           await publicClient.waitForTransactionReceipt({ hash: approveHash });
           if (loadingId) {
             notification.remove(loadingId);
             loadingId = undefined;
           }
         }
-        notification.success("Approval confirmed. Now confirm the purchase in your wallet.");
+        notification.success("Step 2 done. Step 3 of 3: Confirm the purchase in your wallet.");
       }
 
       if (loadingId) {
@@ -137,7 +137,7 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
         functionName: "purchaseShares",
         args: [assetId, shareAmountBigInt, paymentAmount],
       });
-      notification.success("Shares purchased.");
+      notification.success("Purchase complete. Your shares are in your wallet.");
       setShareAmount("");
     } catch (e: unknown) {
       if (loadingId) {
@@ -180,13 +180,17 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
           disabled={!address || shareAmountBigInt <= 0n || isMining || exceedsAvailable}
           onClick={handlePurchase}
         >
-          {isMining ? "Confirming..." : "Buy"}
+          {isMining ? "Confirming…" : "Buy shares"}
         </button>
       </div>
       {shareAmountBigInt > 0n && (
         <div className="mt-2 space-y-0.5 text-xs text-base-content/60">
           <p>You pay: ${(Number(grossDisplay) / 10 ** PAYMENT_DECIMALS).toFixed(2)} (payment token)</p>
           {quote != null && fee > 0n && <p>Protocol fee: ${(Number(fee) / 10 ** PAYMENT_DECIMALS).toFixed(2)}</p>}
+          <p className="mt-1.5 text-base-content/50">
+            You will be asked to approve 3 transactions in your wallet (reset allowance, approve amount, then purchase).
+            This is normal for payment tokens like USDC.
+          </p>
         </div>
       )}
     </div>

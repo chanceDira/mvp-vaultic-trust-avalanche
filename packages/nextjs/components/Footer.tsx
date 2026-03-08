@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useFetchNativeCurrencyPrice } from "@scaffold-ui/hooks";
 import { hardhat } from "viem/chains";
@@ -13,15 +14,22 @@ export const Footer = () => {
   const { price: nativeCurrencyPrice } = useFetchNativeCurrencyPrice();
 
   return (
-    <footer className="footer footer-center md:footer-horizontal p-4 md:px-6 md:py-3 bg-base-200 text-base-content border-t border-base-300 text-sm">
-      <aside className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 md:place-self-start md:justify-self-start">
-        <p className="font-semibold text-primary">Vaultic Trust</p>
-        <span className="hidden sm:inline text-base-content/50">·</span>
-        <p className="text-base-content/70 max-w-[280px] text-center sm:text-left">
-          Tokenizing Africa&apos;s real economy with trust, transparency, and traceability. Built on Avalanche.
+    <footer className="footer footer-center md:footer-horizontal p-6 md:px-8 md:py-5 bg-base-200 text-base-content border-t border-base-300 text-sm">
+      <aside className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 md:place-self-start md:justify-self-start">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-base-100 border border-base-300/70 shadow-sm">
+            <Image alt="Vaultic Trust" fill src="/logo.png" sizes="36px" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-base-content leading-tight">Vaultic Trust</span>
+            <span className="text-xs text-base-content/60 leading-tight">Tokenize Africa&apos;s real economy</span>
+          </div>
+        </Link>
+        <p className="text-base-content/70 max-w-[260px] text-center sm:text-left text-xs sm:text-sm">
+          Trust, transparency, and traceability. Built on Avalanche.
         </p>
       </aside>
-      <nav className="md:place-self-center">
+      <nav className="flex flex-col sm:flex-row items-center gap-4 md:place-self-center">
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-0">
           <Link href="/marketplace" className="link link-hover">
             Marketplace
@@ -34,6 +42,18 @@ export const Footer = () => {
           </Link>
           <Link href="/control-panel" className="link link-hover">
             Control panel
+          </Link>
+        </div>
+        <span className="hidden sm:inline text-base-content/30">·</span>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-0">
+          <Link href="/terms" className="link link-hover">
+            Terms of Service
+          </Link>
+          <Link href="/privacy" className="link link-hover">
+            Privacy Policy
+          </Link>
+          <Link href="/support" className="link link-hover">
+            Support
           </Link>
         </div>
       </nav>
