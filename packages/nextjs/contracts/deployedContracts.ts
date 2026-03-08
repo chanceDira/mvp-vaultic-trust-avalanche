@@ -6371,6 +6371,31 @@ const deployedContracts = {
             {
               indexed: true,
               internalType: "address",
+              name: "assetOwner",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+          ],
+          name: "AssetRelistedAsWhole",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
               name: "tokenContract",
               type: "address",
             },
@@ -6885,6 +6910,52 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+            {
+              internalType: "string",
+              name: "newMetadataURI",
+              type: "string",
+            },
+          ],
+          name: "relistAssetAsFractional",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+            {
+              internalType: "string",
+              name: "newMetadataURI",
+              type: "string",
+            },
+          ],
+          name: "relistWholeAsset",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
           inputs: [],
           name: "renounceOwnership",
           outputs: [],
@@ -7007,7 +7078,7 @@ const deployedContracts = {
       deployedOnBlock: 52491874,
     },
     VaulticAssetRegistry_Implementation: {
-      address: "0xEdD288334Fc62eb20AeE69AA0D2870d7a59fED35",
+      address: "0x1975013226ae51E4e284D88100264b63787BcB2A",
       abi: [
         {
           inputs: [
@@ -7395,6 +7466,31 @@ const deployedContracts = {
             },
           ],
           name: "AssetRelisted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "assetOwner",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+          ],
+          name: "AssetRelistedAsWhole",
           type: "event",
         },
         {
@@ -7936,6 +8032,52 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+            {
+              internalType: "string",
+              name: "newMetadataURI",
+              type: "string",
+            },
+          ],
+          name: "relistAssetAsFractional",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+            {
+              internalType: "string",
+              name: "newMetadataURI",
+              type: "string",
+            },
+          ],
+          name: "relistWholeAsset",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
           inputs: [],
           name: "renounceOwnership",
           outputs: [],
@@ -8039,7 +8181,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 52491870,
+      deployedOnBlock: 52494095,
     },
     VaulticAssetRegistry_Proxy: {
       address: "0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635",
@@ -9090,6 +9232,17 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
+          name: "AssetNotEligibleForWholePurchase",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+          ],
           name: "AssetNotOpenForInvestment",
           type: "error",
         },
@@ -9617,6 +9770,93 @@ const deployedContracts = {
           type: "event",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "buyer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "seller",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "paymentAmount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "feeTaken",
+              type: "uint256",
+            },
+          ],
+          name: "WholeAssetPurchased",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+          ],
+          name: "WholeAssetRelisted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+          ],
+          name: "WholeAssetRelistedAsFractional",
+          type: "event",
+        },
+        {
           inputs: [],
           name: "UPGRADE_INTERFACE_VERSION",
           outputs: [
@@ -9942,6 +10182,19 @@ const deployedContracts = {
               name: "assetId",
               type: "uint256",
             },
+          ],
+          name: "purchaseWholeAsset",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
             {
               internalType: "uint256",
               name: "shareAmount",
@@ -9963,6 +10216,35 @@ const deployedContracts = {
             {
               internalType: "uint256",
               name: "netCost",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+          ],
+          name: "quoteWholePurchase",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "grossPayment",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "fee",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "netToSeller",
               type: "uint256",
             },
           ],
@@ -10016,6 +10298,52 @@ const deployedContracts = {
             },
           ],
           name: "relistAsset",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+            {
+              internalType: "string",
+              name: "newMetadataURI",
+              type: "string",
+            },
+          ],
+          name: "relistAssetAsFractional",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+            {
+              internalType: "string",
+              name: "newMetadataURI",
+              type: "string",
+            },
+          ],
+          name: "relistWholeAsset",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -10211,7 +10539,7 @@ const deployedContracts = {
       deployedOnBlock: 52491880,
     },
     VaulticInvestmentManager_Implementation: {
-      address: "0xf8C54CA047f20C58aeD77F3ddA09A8A677B111DE",
+      address: "0x2c6E61EfB9EdbCF2F5fFdAC52F65F8Dec0bD98dd",
       abi: [
         {
           inputs: [
@@ -10255,6 +10583,17 @@ const deployedContracts = {
             },
           ],
           name: "AssetNotEligibleForTokenization",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+          ],
+          name: "AssetNotEligibleForWholePurchase",
           type: "error",
         },
         {
@@ -10805,6 +11144,93 @@ const deployedContracts = {
           type: "event",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "buyer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "seller",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "paymentAmount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "feeTaken",
+              type: "uint256",
+            },
+          ],
+          name: "WholeAssetPurchased",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+          ],
+          name: "WholeAssetRelisted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+          ],
+          name: "WholeAssetRelistedAsFractional",
+          type: "event",
+        },
+        {
           inputs: [],
           name: "UPGRADE_INTERFACE_VERSION",
           outputs: [
@@ -11130,6 +11556,19 @@ const deployedContracts = {
               name: "assetId",
               type: "uint256",
             },
+          ],
+          name: "purchaseWholeAsset",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
             {
               internalType: "uint256",
               name: "shareAmount",
@@ -11151,6 +11590,35 @@ const deployedContracts = {
             {
               internalType: "uint256",
               name: "netCost",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+          ],
+          name: "quoteWholePurchase",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "grossPayment",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "fee",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "netToSeller",
               type: "uint256",
             },
           ],
@@ -11204,6 +11672,52 @@ const deployedContracts = {
             },
           ],
           name: "relistAsset",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+            {
+              internalType: "string",
+              name: "newMetadataURI",
+              type: "string",
+            },
+          ],
+          name: "relistAssetAsFractional",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "assetId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint128",
+              name: "newValuation",
+              type: "uint128",
+            },
+            {
+              internalType: "string",
+              name: "newMetadataURI",
+              type: "string",
+            },
+          ],
+          name: "relistWholeAsset",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -11380,83 +11894,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 52491877,
-    },
-    VaulticInvestmentManager_Proxy: {
-      address: "0xcA3EDAfd3344f57e7180ABD051e1bF027498e503",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_logic",
-              type: "address",
-            },
-            {
-              internalType: "bytes",
-              name: "_data",
-              type: "bytes",
-            },
-          ],
-          stateMutability: "payable",
-          type: "constructor",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "previousAdmin",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "address",
-              name: "newAdmin",
-              type: "address",
-            },
-          ],
-          name: "AdminChanged",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "beacon",
-              type: "address",
-            },
-          ],
-          name: "BeaconUpgraded",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "implementation",
-              type: "address",
-            },
-          ],
-          name: "Upgraded",
-          type: "event",
-        },
-        {
-          stateMutability: "payable",
-          type: "fallback",
-        },
-        {
-          stateMutability: "payable",
-          type: "receive",
-        },
-      ],
-      inheritedFunctions: {},
-      deployedOnBlock: 52491880,
+      deployedOnBlock: 52494347,
     },
   },
 } as const;

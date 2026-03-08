@@ -79,7 +79,7 @@ Canonical addresses per network. Proxies are the application’s contract endpoi
 | VaulticAssetRegistry | Proxy | `0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635` |
 | VaulticAssetRegistry_Implementation | Implementation | `0xEdD288334Fc62eb20AeE69AA0D2870d7a59fED35` |
 | VaulticInvestmentManager | Proxy | `0xcA3EDAfd3344f57e7180ABD051e1bF027498e503` |
-| VaulticInvestmentManager_Implementation | Implementation | `0xf8C54CA047f20C58aeD77F3ddA09A8A677B111DE` |
+| VaulticInvestmentManager_Implementation | Implementation | `0x2c6E61EfB9EdbCF2F5fFdAC52F65F8Dec0bD98dd` |
 | VaulticFractionalOwnershipToken | Implementation | `0x4d8f5709AcD40aC1DB92A32F68DB81a1d5B1C3B9` |
 | Payment token (Fuji USDC) | Used by Investment Manager | `0x5425890298aed601595a70AB815c96711a31Bc65` |
 

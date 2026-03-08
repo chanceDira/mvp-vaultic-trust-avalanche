@@ -21,6 +21,11 @@ const deployVaulticRegistry: DeployFunction = async function (hre: HardhatRuntim
           args: [deployer, deployer],
         },
       },
+      // OZ v5 UUPS exposes upgradeToAndCall, not upgradeTo; hardhat-deploy may default to upgradeTo on re-runs
+      upgradeFunction: {
+        methodName: "upgradeToAndCall",
+        upgradeArgs: ["{implementation}", "{data}"],
+      },
     },
     log: true,
     autoMine: true,
