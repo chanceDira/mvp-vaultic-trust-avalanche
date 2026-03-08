@@ -224,13 +224,13 @@
      0
     ],
     "gasData": [
-     266250
+     266461
     ],
     "numberOfCalls": 1,
-    "executionGasAverage": 266250,
+    "executionGasAverage": 266461,
     "calldataGasAverage": 0,
-    "min": 266250,
-    "max": 266250
+    "min": 266461,
+    "max": 266461
    },
    "VaulticAssetRegistry_476dfde3": {
     "key": "476dfde3",
@@ -978,13 +978,13 @@
      0
     ],
     "gasData": [
-     238707
+     240272
     ],
     "numberOfCalls": 1,
-    "executionGasAverage": 238707,
+    "executionGasAverage": 240272,
     "calldataGasAverage": 0,
-    "min": 238707,
-    "max": 238707
+    "min": 240272,
+    "max": 240272
    },
    "VaulticInvestmentManager_c6c2aed2": {
     "key": "c6c2aed2",
@@ -1315,18 +1315,18 @@
    {
     "name": "VaulticAssetRegistry",
     "gasData": [
-     2314225,
-     2314225
+     2419821,
+     2419821
     ],
     "callData": [
      0,
      0
     ],
-    "executionGasAverage": 2314225,
+    "executionGasAverage": 2419821,
     "calldataGasAverage": 0,
-    "min": 2314225,
-    "max": 2314225,
-    "percent": 3.9
+    "min": 2419821,
+    "max": 2419821,
+    "percent": 4
    },
    {
     "name": "VaulticFractionalOwnershipToken",

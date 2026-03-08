@@ -27,7 +27,7 @@ export const deployedContractAddresses: Partial<Record<number, DeployedContractA
   [chains.avalancheFuji.id]: {
     VaulticAssetRegistry: {
       proxy: "0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635",
-      implementation: "0xEdD288334Fc62eb20AeE69AA0D2870d7a59fED35",
+      implementation: "0x71c116D7bd6965A6912892978B42Fa1c658af9e6",
     },
     VaulticInvestmentManager: {
       proxy: "0xcA3EDAfd3344f57e7180ABD051e1bF027498e503",
