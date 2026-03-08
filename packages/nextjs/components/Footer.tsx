@@ -3,15 +3,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { useFetchNativeCurrencyPrice } from "@scaffold-ui/hooks";
 import { hardhat } from "viem/chains";
+import { useAccount } from "wagmi";
 import { CurrencyDollarIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { Faucet } from "~~/components/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useScaffoldReadContract, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 export const Footer = () => {
+  const { address } = useAccount();
   const { targetNetwork } = useTargetNetwork();
   const isLocalNetwork = targetNetwork.id === hardhat.id;
   const { price: nativeCurrencyPrice } = useFetchNativeCurrencyPrice();
+  const { data: invOwner } = useScaffoldReadContract({
+    contractName: "VaulticInvestmentManager",
+    functionName: "owner",
+  });
+  const isInvOwner = !!address && !!invOwner && address.toLowerCase() === (invOwner as string).toLowerCase();
 
   return (
     <footer className="footer footer-center md:footer-horizontal p-6 md:px-8 md:py-5 bg-base-200 text-base-content border-t border-base-300 text-sm">
@@ -40,9 +47,11 @@ export const Footer = () => {
           <Link href="/investor" className="link link-hover">
             For investors
           </Link>
-          <Link href="/control-panel" className="link link-hover">
-            Control panel
-          </Link>
+          {isInvOwner && (
+            <Link href="/control-panel" className="link link-hover">
+              Control panel
+            </Link>
+          )}
         </div>
         <span className="hidden sm:inline text-base-content/30">·</span>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-0">

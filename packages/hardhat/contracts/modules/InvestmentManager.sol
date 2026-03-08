@@ -42,6 +42,7 @@ contract VaulticInvestmentManager is
     error FeeBpsExceedsMaximum(uint256 provided, uint256 maximum);
     error CallerDoesNotHoldFullSupply(uint256 assetId, address caller, uint256 balance, uint256 supply);
     error AssetNotClosedForRelisting(uint256 assetId);
+    error AssetNotEligibleForWholePurchase(uint256 assetId);
 
     uint256 private constant BPS_DENOMINATOR = 10_000;
     uint256 private constant MAX_FEE_BPS = 1_000;
@@ -71,6 +72,15 @@ contract VaulticInvestmentManager is
         uint256 paymentAmount,
         uint256 feeTaken
     );
+    event WholeAssetPurchased(
+        uint256 indexed assetId,
+        address indexed buyer,
+        address indexed seller,
+        uint256 paymentAmount,
+        uint256 feeTaken
+    );
+    event WholeAssetRelisted(uint256 indexed assetId, address indexed owner, uint128 newValuation);
+    event WholeAssetRelistedAsFractional(uint256 indexed assetId, address indexed owner, uint128 newValuation);
     event OfferingFullySubscribed(uint256 indexed assetId, uint256 totalProceeds);
     event ProceedsWithdrawn(uint256 indexed assetId, address indexed recipient, uint256 amount);
     event AssetRelisted(
@@ -238,6 +248,75 @@ contract VaulticInvestmentManager is
     }
 
     /**
+     * @notice Purchases a WHOLE_OWNERSHIP asset for its full valuation. Caller pays in payment token; previous owner receives net (minus protocol fee). Asset is closed and ownership transferred to caller.
+     * @param assetId Registry identifier of the whole asset (must be ACTIVE and WHOLE_OWNERSHIP).
+     */
+    function purchaseWholeAsset(uint256 assetId) external whenNotPaused nonReentrant {
+        VaulticAssetRegistry.AssetRecord memory rec = registry.getAsset(assetId);
+        if (rec.state != VaulticAssetRegistry.AssetState.ACTIVE) revert AssetNotEligibleForWholePurchase(assetId);
+        if (rec.model != VaulticAssetRegistry.OwnershipModel.WHOLE_OWNERSHIP)
+            revert AssetNotEligibleForWholePurchase(assetId);
+
+        uint256 grossPayment = uint256(rec.valuation);
+        if (grossPayment == 0) revert ZeroPurchaseAmount();
+
+        uint256 fee = (grossPayment * protocolFeeBps) / BPS_DENOMINATOR;
+        uint256 netToSeller = grossPayment - fee;
+
+        accumulatedFees += fee;
+
+        paymentToken.safeTransferFrom(msg.sender, address(this), grossPayment);
+        paymentToken.safeTransfer(rec.assetOwner, netToSeller);
+
+        registry.transferAssetOwnership(assetId, msg.sender);
+        registry.closeAsset(assetId);
+
+        emit WholeAssetPurchased(assetId, msg.sender, rec.assetOwner, grossPayment, fee);
+    }
+
+    /**
+     * @notice Lets the owner of a CLOSED WHOLE asset relist it for sale as whole again. Caller must be the registered asset owner.
+     * @param assetId Registry identifier of the CLOSED whole asset.
+     * @param newValuation USD valuation for the new listing (6 decimals).
+     * @param newMetadataURI URI for fresh documentation.
+     */
+    function relistWholeAsset(
+        uint256 assetId,
+        uint128 newValuation,
+        string calldata newMetadataURI
+    ) external whenNotPaused nonReentrant {
+        VaulticAssetRegistry.AssetRecord memory rec = registry.getAsset(assetId);
+        if (msg.sender != rec.assetOwner) revert NotAssetOwner(assetId, msg.sender);
+        if (rec.state != VaulticAssetRegistry.AssetState.CLOSED) revert AssetNotClosedForRelisting(assetId);
+        if (rec.model != VaulticAssetRegistry.OwnershipModel.WHOLE_OWNERSHIP)
+            revert AssetNotEligibleForWholePurchase(assetId);
+
+        registry.relistWholeAsset(assetId, newValuation, newMetadataURI);
+        emit WholeAssetRelisted(assetId, msg.sender, newValuation);
+    }
+
+    /**
+     * @notice Lets the owner of a CLOSED WHOLE asset relist it as FRACTIONAL so it can be tokenized and sold in shares. Caller must be the registered asset owner. After this, protocol owner must call tokenizeAsset to deploy the token and open the pool.
+     * @param assetId Registry identifier of the CLOSED whole asset.
+     * @param newValuation USD valuation for the fractional round (6 decimals).
+     * @param newMetadataURI URI for fresh legal/valuation docs.
+     */
+    function relistAssetAsFractional(
+        uint256 assetId,
+        uint128 newValuation,
+        string calldata newMetadataURI
+    ) external whenNotPaused nonReentrant {
+        VaulticAssetRegistry.AssetRecord memory rec = registry.getAsset(assetId);
+        if (msg.sender != rec.assetOwner) revert NotAssetOwner(assetId, msg.sender);
+        if (rec.state != VaulticAssetRegistry.AssetState.CLOSED) revert AssetNotClosedForRelisting(assetId);
+        if (rec.model != VaulticAssetRegistry.OwnershipModel.WHOLE_OWNERSHIP)
+            revert AssetNotEligibleForWholePurchase(assetId);
+
+        registry.relistAssetAsFractional(assetId, newValuation, newMetadataURI);
+        emit WholeAssetRelistedAsFractional(assetId, msg.sender, newValuation);
+    }
+
+    /**
      * @notice Lets full owner (100% ERC20 supply) relist a CLOSED asset for a new round. Atomic: verify, reclaim, transfer ownership, relist, record tokenization, reset pool.
      * @param assetId Registry identifier of the CLOSED asset.
      * @param newTotalShares Total share supply for the new round.
@@ -392,6 +471,28 @@ contract VaulticInvestmentManager is
         uint256 assetId
     ) external view poolExists(assetId) returns (AssetInvestmentPool memory pool) {
         pool = _pools[assetId];
+    }
+
+    /**
+     * @notice Returns gross, fee, and net for a whole-asset purchase (valuation).
+     * @param assetId Asset to price (must be ACTIVE and WHOLE_OWNERSHIP).
+     * @return grossPayment Full valuation (payment token units).
+     * @return fee Protocol fee component.
+     * @return netToSeller Amount to seller (gross − fee).
+     */
+    function quoteWholePurchase(
+        uint256 assetId
+    ) external view returns (uint256 grossPayment, uint256 fee, uint256 netToSeller) {
+        VaulticAssetRegistry.AssetRecord memory rec = registry.getAsset(assetId);
+        if (
+            rec.state != VaulticAssetRegistry.AssetState.ACTIVE ||
+            rec.model != VaulticAssetRegistry.OwnershipModel.WHOLE_OWNERSHIP
+        ) {
+            return (0, 0, 0);
+        }
+        grossPayment = uint256(rec.valuation);
+        fee = (grossPayment * protocolFeeBps) / BPS_DENOMINATOR;
+        netToSeller = grossPayment - fee;
     }
 
     /**

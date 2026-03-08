@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Address } from "@scaffold-ui/components";
 import { InvestmentPanel } from "~~/components/assets/InvestmentPanel";
 import { RelistAssetBlock } from "~~/components/assets/RelistAssetBlock";
+import { RelistWholeAssetBlock } from "~~/components/assets/RelistWholeAssetBlock";
 import { TokenProgressBar } from "~~/components/assets/TokenProgressBar";
 import { TokenizationActions } from "~~/components/assets/TokenizationActions";
+import { WholeAssetPurchaseBlock } from "~~/components/assets/WholeAssetPurchaseBlock";
 import { WithdrawProceedsBlock } from "~~/components/assets/WithdrawProceedsBlock";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
@@ -90,6 +92,7 @@ export function AssetCard({
     rec.model === 1 &&
     !!rec.tokenContract &&
     rec.tokenContract !== "0x0000000000000000000000000000000000000000";
+  const showRelistWholeBlock = showWithdrawProceeds && rec.state === 3 && rec.model === 0;
 
   return (
     <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm transition-shadow hover:shadow-md">
@@ -121,6 +124,11 @@ export function AssetCard({
           <TokenProgressBar soldShares={rec.soldShares} totalShares={rec.totalShares} label="Funding" />
         </div>
       )}
+      {showInvestmentPanel && rec.state === 1 && rec.model === 0 && rec.valuation > 0n && (
+        <div className="mt-4 border-t border-base-300 pt-4">
+          <WholeAssetPurchaseBlock assetId={assetId} valuation={rec.valuation} assetName={rec.assetName} />
+        </div>
+      )}
       {showInvestmentPanel &&
         rec.state === 2 &&
         rec.tokenContract &&
@@ -130,6 +138,7 @@ export function AssetCard({
           </div>
         )}
       {showProceedsBlock && <WithdrawProceedsBlock assetId={assetId} assetOwner={rec.assetOwner} />}
+      {showRelistWholeBlock && <RelistWholeAssetBlock assetId={assetId} assetName={rec.assetName} />}
       {showRelistBlock && <RelistAssetBlock assetId={assetId} tokenContract={rec.tokenContract} />}
       {showTokenizationActions && (
         <TokenizationActions

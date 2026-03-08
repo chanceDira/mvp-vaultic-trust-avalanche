@@ -31,7 +31,7 @@ export const deployedContractAddresses: Partial<Record<number, DeployedContractA
     },
     VaulticInvestmentManager: {
       proxy: "0xcA3EDAfd3344f57e7180ABD051e1bF027498e503",
-      implementation: "0xf8C54CA047f20C58aeD77F3ddA09A8A677B111DE",
+      implementation: "0x2c6E61EfB9EdbCF2F5fFdAC52F65F8Dec0bD98dd",
     },
     VaulticFractionalOwnershipToken: {
       implementation: "0x4d8f5709AcD40aC1DB92A32F68DB81a1d5B1C3B9",

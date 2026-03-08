@@ -90,6 +90,7 @@ contract VaulticAssetRegistry is
     event TokenizerUpdated(address indexed previous, address indexed updated);
     event AssetOwnershipTransferred(uint256 indexed assetId, address indexed previousOwner, address indexed newOwner);
     event AssetRelisted(uint256 indexed assetId, address indexed newOwner, uint128 newValuation, uint32 relistCount);
+    event AssetRelistedAsWhole(uint256 indexed assetId, address indexed assetOwner, uint128 newValuation);
 
     address public tokenizer;
     uint96 private _assetCounter;
@@ -306,6 +307,65 @@ contract VaulticAssetRegistry is
     }
 
     /**
+     * @notice Reopens a CLOSED WHOLE asset for sale as whole again. Tokenizer-only; caller must be asset owner (enforced by tokenizer).
+     * @param assetId Asset to relist (must be CLOSED and WHOLE_OWNERSHIP).
+     * @param newValuation USD valuation for the new listing.
+     * @param newMetadataURI URI for fresh docs.
+     */
+    function relistWholeAsset(
+        uint256 assetId,
+        uint128 newValuation,
+        string calldata newMetadataURI
+    ) external onlyTokenizer whenNotPaused assetExists(assetId) {
+        if (newValuation == 0) revert InvalidValuation(0);
+        if (bytes(newMetadataURI).length == 0) revert EmptyStringField("metadataURI");
+
+        AssetRecord storage rec = _assets[assetId];
+        if (rec.state != AssetState.CLOSED) revert AssetNotClosedForRelisting(assetId, rec.state);
+        if (rec.model != OwnershipModel.WHOLE_OWNERSHIP) revert OwnershipModelMismatch(assetId, rec.model);
+
+        _requireTransition(assetId, rec.state, AssetState.ACTIVE);
+        rec.state = AssetState.ACTIVE;
+        rec.valuation = newValuation;
+        rec.metadataURI = newMetadataURI;
+
+        emit AssetRelistedAsWhole(assetId, rec.assetOwner, newValuation);
+    }
+
+    /**
+     * @notice Transitions a CLOSED WHOLE asset to RELISTED as FRACTIONAL so it can be tokenized and sold in shares. Tokenizer-only; caller must be asset owner (enforced by tokenizer).
+     * @param assetId Asset to relist (must be CLOSED and WHOLE_OWNERSHIP).
+     * @param newValuation USD valuation for the fractional round.
+     * @param newMetadataURI URI for fresh legal/valuation docs.
+     */
+    function relistAssetAsFractional(
+        uint256 assetId,
+        uint128 newValuation,
+        string calldata newMetadataURI
+    ) external onlyTokenizer whenNotPaused assetExists(assetId) {
+        if (newValuation == 0) revert InvalidValuation(0);
+        if (bytes(newMetadataURI).length == 0) revert EmptyStringField("metadataURI");
+
+        AssetRecord storage rec = _assets[assetId];
+        if (rec.state != AssetState.CLOSED) revert AssetNotClosedForRelisting(assetId, rec.state);
+        if (rec.model != OwnershipModel.WHOLE_OWNERSHIP) revert OwnershipModelMismatch(assetId, rec.model);
+
+        rec.state = AssetState.RELISTED;
+        rec.model = OwnershipModel.FRACTIONAL;
+        rec.valuation = newValuation;
+        rec.metadataURI = newMetadataURI;
+        rec.soldShares = 0;
+        rec.totalShares = 0;
+        rec.pricePerShare = 0;
+        rec.tokenizedAt = 0;
+        uint32 newCount = rec.relistCount + 1;
+        rec.relistCount = newCount;
+        rec.relistedAt = uint48(block.timestamp);
+
+        emit AssetRelisted(assetId, rec.assetOwner, newValuation, newCount);
+    }
+
+    /**
      * @notice Returns the full canonical record for a given asset.
      * @param assetId Identifier of the asset to retrieve.
      * @return rec Complete AssetRecord struct.
@@ -376,6 +436,7 @@ contract VaulticAssetRegistry is
         if (current == AssetState.ACTIVE && requested == AssetState.CLOSED) valid = true;
         if (current == AssetState.TOKENIZED && requested == AssetState.CLOSED) valid = true;
         if (current == AssetState.CLOSED && requested == AssetState.RELISTED) valid = true;
+        if (current == AssetState.CLOSED && requested == AssetState.ACTIVE) valid = true; // whole-asset relist
         if (current == AssetState.RELISTED && requested == AssetState.TOKENIZED) valid = true;
 
         if (!valid) revert InvalidStateTransition(assetId, current, requested);

@@ -62,6 +62,10 @@ const deployInvestmentManager: DeployFunction = async function (hre: HardhatRunt
           ],
         },
       },
+      upgradeFunction: {
+        methodName: "upgradeToAndCall",
+        upgradeArgs: ["{implementation}", "{data}"],
+      },
     },
     log: true,
     autoMine: true,

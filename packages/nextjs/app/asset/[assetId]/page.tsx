@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Address } from "@scaffold-ui/components";
+import { useAccount } from "wagmi";
 import { ArrowLeftIcon, DocumentTextIcon, LinkIcon } from "@heroicons/react/24/outline";
+import { RelistWholeAssetBlock } from "~~/components/assets/RelistWholeAssetBlock";
+import { WholeAssetPurchaseBlock } from "~~/components/assets/WholeAssetPurchaseBlock";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const ASSET_STATE_LABELS: Record<number, string> = {
@@ -21,6 +24,7 @@ const MODEL_LABELS: Record<number, string> = {
 
 export default function AssetDetailsPage() {
   const params = useParams();
+  const { address } = useAccount();
   const assetIdParam = params?.assetId;
   const assetId = assetIdParam ? BigInt(assetIdParam as string) : undefined;
 
@@ -194,6 +198,21 @@ export default function AssetDetailsPage() {
               )}
             </dl>
           </div>
+
+          {rec.state === 1 && rec.model === 0 && rec.valuation > 0n && (
+            <div className="mt-6">
+              <WholeAssetPurchaseBlock assetId={rec.assetId} valuation={rec.valuation} assetName={rec.assetName} />
+            </div>
+          )}
+
+          {rec.state === 3 &&
+            rec.model === 0 &&
+            address &&
+            address.toLowerCase() === (rec.assetOwner as string).toLowerCase() && (
+              <div className="mt-6">
+                <RelistWholeAssetBlock assetId={rec.assetId} assetName={rec.assetName} />
+              </div>
+            )}
 
           <p className="mt-6 text-sm text-base-content/60">
             <Link href="/owner" className="link link-primary">
