@@ -58,6 +58,10 @@ export default function ControlPanelPage() {
     contractName: "VaulticAssetRegistry",
     functionName: "tokenizer",
   });
+  const { data: registryPaused } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "paused",
+  });
   const { data: imContractInfo } = useDeployedContractInfo({ contractName: "VaulticInvestmentManager" });
   const imProxyAddress = imContractInfo?.address;
 
@@ -183,6 +187,28 @@ export default function ControlPanelPage() {
     }
   };
 
+  const handleRegistryUnpause = async () => {
+    if (!isRegistryOwner) return;
+    try {
+      await writeRegistry({ functionName: "unpause" });
+      notification.success("Registry unpaused. Relist and other registry operations can proceed.");
+    } catch (e: unknown) {
+      console.error(e);
+      notification.error("Unpause registry failed");
+    }
+  };
+
+  const handleRegistryPause = async () => {
+    if (!isRegistryOwner) return;
+    try {
+      await writeRegistry({ functionName: "pause" });
+      notification.success("Registry paused.");
+    } catch (e: unknown) {
+      console.error(e);
+      notification.error("Pause registry failed");
+    }
+  };
+
   return (
     <div className="flex flex-col grow">
       <section className="px-4 py-8 md:py-12">
@@ -253,6 +279,18 @@ export default function ControlPanelPage() {
                   </p>
                   <dl className="mt-3 space-y-2 text-sm">
                     <div className="flex justify-between gap-4 items-center">
+                      <dt className="text-base-content/70">Registry paused</dt>
+                      <dd className="font-mono">
+                        {registryPaused === true ? (
+                          <span className="text-warning font-semibold">Yes — relist will revert until unpaused</span>
+                        ) : registryPaused === false ? (
+                          "No"
+                        ) : (
+                          "—"
+                        )}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-4 items-center">
                       <dt className="text-base-content/70">Current tokenizer</dt>
                       <dd className="font-mono truncate max-w-[14rem]" title={registryTokenizer as string}>
                         {registryTokenizer
@@ -267,6 +305,26 @@ export default function ControlPanelPage() {
                       </dd>
                     </div>
                   </dl>
+                  {isRegistryOwner && registryPaused === true && (
+                    <button
+                      type="button"
+                      className="btn btn-warning btn-sm mt-2"
+                      disabled={registryMining}
+                      onClick={handleRegistryUnpause}
+                    >
+                      {registryMining ? <span className="loading loading-spinner loading-sm" /> : "Unpause registry"}
+                    </button>
+                  )}
+                  {isRegistryOwner && registryPaused === false && (
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm mt-2 text-base-content/70"
+                      disabled={registryMining}
+                      onClick={handleRegistryPause}
+                    >
+                      Pause registry
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="btn btn-primary btn-sm mt-3"

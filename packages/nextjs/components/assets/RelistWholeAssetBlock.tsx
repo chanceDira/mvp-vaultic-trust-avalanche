@@ -47,9 +47,11 @@ export function RelistWholeAssetBlock({ assetId, assetName }: RelistWholeAssetBl
     } catch (err: unknown) {
       console.error(err);
       const msg = getParsedError(err) || "Relist failed.";
-      const friendly =
-        typeof msg === "string" && msg.includes("UnauthorizedCaller")
-          ? "Relist failed: protocol configuration error. The registry tokenizer may not be set to the Investment Manager. Ask the protocol admin to run registry.setTokenizer(InvestmentManagerProxyAddress)."
+      const s = typeof msg === "string" ? msg : "";
+      const friendly = s.includes("UnauthorizedCaller")
+        ? "Relist failed: protocol configuration error. The registry tokenizer may not be set to the Investment Manager. Ask the protocol admin to run registry.setTokenizer(InvestmentManagerProxyAddress)."
+        : s.includes("Pausable") || s.includes("EnforcedPause") || s.includes("paused")
+          ? "Relist failed: the registry is paused. Ask the protocol admin to unpause the registry in Control panel."
           : msg;
       notification.error(friendly);
     }
@@ -81,9 +83,11 @@ export function RelistWholeAssetBlock({ assetId, assetName }: RelistWholeAssetBl
     } catch (err: unknown) {
       console.error(err);
       const msg = getParsedError(err) || "Relist failed.";
-      const friendly =
-        typeof msg === "string" && msg.includes("UnauthorizedCaller")
-          ? "Relist failed: protocol configuration error. The registry tokenizer may not be set to the Investment Manager. Ask the protocol admin to run registry.setTokenizer(InvestmentManagerProxyAddress)."
+      const s = typeof msg === "string" ? msg : "";
+      const friendly = s.includes("UnauthorizedCaller")
+        ? "Relist failed: protocol configuration error. The registry tokenizer may not be set to the Investment Manager. Ask the protocol admin to run registry.setTokenizer(InvestmentManagerProxyAddress)."
+        : s.includes("Pausable") || s.includes("EnforcedPause") || s.includes("paused")
+          ? "Relist failed: the registry is paused. Ask the protocol admin to unpause the registry in Control panel."
           : msg;
       notification.error(friendly);
     }
