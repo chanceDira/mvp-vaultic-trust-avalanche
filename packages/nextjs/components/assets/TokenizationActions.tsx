@@ -29,7 +29,7 @@ export function TokenizationActions({
   const { data: asset, isLoading } = useScaffoldReadContract({
     contractName: "VaulticAssetRegistry",
     functionName: "getAsset",
-    args: assetOverride === undefined ? [assetId] : undefined,
+    args: [assetId],
   });
 
   const { writeContractAsync: writeApprove, isMining: isApproveMining } = useScaffoldWriteContract({
@@ -47,8 +47,8 @@ export function TokenizationActions({
 
   const raw = Array.isArray(asset) ? asset[0] : asset;
   const rec = raw as { state: number; model: number; valuation: bigint; assetName: string };
-  const state = rec.state;
-  const model = rec.model;
+  const state = assetOverride?.state ?? rec.state;
+  const model = assetOverride?.model ?? rec.model;
 
   const showApprove = state === ASSET_STATE_PENDING;
   const showTokenize = state === ASSET_STATE_ACTIVE && model === MODEL_FRACTIONAL;
