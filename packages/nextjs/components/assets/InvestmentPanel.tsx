@@ -17,14 +17,20 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
   const { data: investmentManagerInfo } = useDeployedContractInfo({
     contractName: "VaulticInvestmentManager",
   });
+  const shareNum = shareAmount ? Math.max(0, Math.floor(Number(shareAmount))) : 0;
+  const shareAmountBigInt = BigInt(shareNum);
+  const paymentAmount = shareAmountBigInt * pricePerShare;
+
   const { data: availableSharesRaw } = useScaffoldReadContract({
     contractName: "VaulticInvestmentManager",
     functionName: "availableShares",
     args: [assetId],
   });
-
-  const availableShares = (availableSharesRaw as bigint | undefined) ?? 0n;
-  const availableNum = Number(availableShares);
+  const { data: quoteRaw } = useScaffoldReadContract({
+    contractName: "VaulticInvestmentManager",
+    functionName: "quotePurchase",
+    args: shareAmountBigInt > 0n ? [assetId, shareAmountBigInt] : undefined,
+  });
 
   const { writeContractAsync: writeApprove } = useScaffoldWriteContract({
     contractName: "MockERC20",
@@ -33,10 +39,13 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
     contractName: "VaulticInvestmentManager",
   });
 
-  const shareNum = shareAmount ? Math.max(0, Math.floor(Number(shareAmount))) : 0;
-  const shareAmountBigInt = BigInt(shareNum);
-  const paymentAmount = shareAmountBigInt * pricePerShare;
+  const availableShares = (availableSharesRaw as bigint | undefined) ?? 0n;
+  const availableNum = Number(availableShares);
   const exceedsAvailable = availableNum > 0 && shareNum > availableNum;
+  const quote = quoteRaw as [bigint, bigint, bigint] | undefined;
+  const [grossCost, fee] = quote ?? [paymentAmount, 0n];
+  const grossDisplay = quote != null ? grossCost : paymentAmount;
+  const PAYMENT_DECIMALS = 6;
 
   const handlePurchase = async () => {
     if (!address || !investmentManagerInfo?.address) {
@@ -106,9 +115,10 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
         </button>
       </div>
       {shareAmountBigInt > 0n && (
-        <p className="mt-2 text-xs text-base-content/60">
-          Total: ${((Number(pricePerShare) * Number(shareAmountBigInt)) / 1e6).toFixed(2)} (payment token)
-        </p>
+        <div className="mt-2 space-y-0.5 text-xs text-base-content/60">
+          <p>You pay: ${(Number(grossDisplay) / 10 ** PAYMENT_DECIMALS).toFixed(2)} (payment token)</p>
+          {quote != null && fee > 0n && <p>Protocol fee: ${(Number(fee) / 10 ** PAYMENT_DECIMALS).toFixed(2)}</p>}
+        </div>
       )}
     </div>
   );
