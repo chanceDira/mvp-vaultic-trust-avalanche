@@ -1,9 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
+
+const ERC20_APPROVE_ABI = [
+  {
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+] as const;
 
 type InvestmentPanelProps = {
   assetId: bigint;
@@ -31,10 +44,12 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
     functionName: "quotePurchase",
     args: shareAmountBigInt > 0n ? [assetId, shareAmountBigInt] : undefined,
   });
-
-  const { writeContractAsync: writeApprove } = useScaffoldWriteContract({
-    contractName: "MockERC20",
+  const { data: paymentTokenAddress } = useScaffoldReadContract({
+    contractName: "VaulticInvestmentManager",
+    functionName: "paymentToken",
   });
+
+  const { writeContractAsync: writeApprove } = useWriteContract();
   const { writeContractAsync: writePurchase, isMining } = useScaffoldWriteContract({
     contractName: "VaulticInvestmentManager",
   });
@@ -62,8 +77,10 @@ export function InvestmentPanel({ assetId, pricePerShare, assetName }: Investmen
     }
 
     try {
-      if (paymentAmount > 0n) {
+      if (paymentAmount > 0n && paymentTokenAddress) {
         await writeApprove({
+          address: paymentTokenAddress as `0x${string}`,
+          abi: ERC20_APPROVE_ABI,
           functionName: "approve",
           args: [investmentManagerInfo.address as `0x${string}`, paymentAmount],
         });

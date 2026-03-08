@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Address } from "@scaffold-ui/components";
 import { InvestmentPanel } from "~~/components/assets/InvestmentPanel";
 import { RelistAssetBlock } from "~~/components/assets/RelistAssetBlock";
@@ -110,13 +111,11 @@ export function AssetCard({
           <Address address={rec.assetOwner as `0x${string}`} format="short" />
         </span>
       </div>
-      {rec.metadataURI && rec.metadataURI.trim() !== "" && (
-        <p className="mt-2 text-sm">
-          <a href={rec.metadataURI} target="_blank" rel="noopener noreferrer" className="link link-primary">
-            Documentation
-          </a>
-        </p>
-      )}
+      <p className="mt-2 text-sm">
+        <Link href={`/asset/${assetId}`} className="link link-primary">
+          Details
+        </Link>
+      </p>
       {rec.totalShares > 0n && (
         <div className="mt-4">
           <TokenProgressBar soldShares={rec.soldShares} totalShares={rec.totalShares} label="Funding" />
