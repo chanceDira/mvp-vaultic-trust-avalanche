@@ -268,9 +268,23 @@ contract VaulticAssetRegistry is
         address previousOwner = rec.assetOwner;
         if (previousOwner == newOwner) return;
 
+        _removeFromOwnerAssets(previousOwner, assetId);
         rec.assetOwner = newOwner;
         _ownerAssets[newOwner].push(assetId);
         emit AssetOwnershipTransferred(assetId, previousOwner, newOwner);
+    }
+
+    /// @dev Removes one occurrence of assetId from an owner's list (swap-with-last and pop).
+    function _removeFromOwnerAssets(address owner, uint256 assetId) private {
+        uint256[] storage list = _ownerAssets[owner];
+        uint256 n = list.length;
+        for (uint256 i; i < n; i++) {
+            if (list[i] == assetId) {
+                if (i != n - 1) list[i] = list[n - 1];
+                list.pop();
+                return;
+            }
+        }
     }
 
     /**
@@ -375,12 +389,21 @@ contract VaulticAssetRegistry is
     }
 
     /**
-     * @notice Returns all asset IDs ever associated with an owner (includes historical).
+     * @notice Returns asset IDs currently owned by the given address (current owner only; sold assets are excluded).
      * @param assetOwner Owner address to query.
-     * @return ids Array of asset IDs.
+     * @return ids Array of asset IDs whose assetOwner is the given address.
      */
     function getAssetsByOwner(address assetOwner) external view returns (uint256[] memory ids) {
-        ids = _ownerAssets[assetOwner];
+        uint256[] storage raw = _ownerAssets[assetOwner];
+        uint256 count;
+        for (uint256 i; i < raw.length; i++) {
+            if (_assets[raw[i]].assetOwner == assetOwner) count++;
+        }
+        ids = new uint256[](count);
+        uint256 j;
+        for (uint256 i; i < raw.length; i++) {
+            if (_assets[raw[i]].assetOwner == assetOwner) ids[j++] = raw[i];
+        }
     }
 
     /**
