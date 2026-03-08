@@ -12,42 +12,29 @@ export type ImplementationAddress = {
   implementation: Address;
 };
 
-/** Single-address contract (e.g. payment token). */
-export type SingleContractAddress = {
-  address: Address;
-};
-
-/** Typed deployed contract addresses per chain. */
+/** Typed deployed contract addresses per chain. Payment token is read from VaulticInvestmentManager.paymentToken() (Fuji USDC on Fuji). */
 export type DeployedContractAddresses = {
   VaulticAssetRegistry: ProxyContractAddresses;
   VaulticInvestmentManager: ProxyContractAddresses;
   VaulticFractionalOwnershipToken: ImplementationAddress;
-  MockERC20: SingleContractAddress;
 };
 
-/**
- * Fuji payment token: USDC testnet (used by Investment Manager when deployed with Fuji USDC).
- * The buy flow reads paymentToken() from VaulticInvestmentManager; no hardcoded MockERC20 on Fuji.
- */
+/** Fuji USDC testnet address. Investment Manager is deployed with this on Fuji. */
 export const FUJI_USDC_ADDRESS = "0x5425890298aed601595a70AB815c96711a31Bc65" as const;
 
-/** Contract addresses by chain ID. Proxies are the app endpoints; implementations for verification/upgrades. */
+/** Contract addresses by chain ID. Proxies are the app endpoints. */
 export const deployedContractAddresses: Partial<Record<number, DeployedContractAddresses>> = {
   [chains.avalancheFuji.id]: {
     VaulticAssetRegistry: {
-      proxy: "0x89dAc7d94e07609F281138Db9EAA8A2A483A1464",
-      implementation: "0x15AD832cF700558e8A0919E36eEA032a477cA6ad",
+      proxy: "0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635",
+      implementation: "0xEdD288334Fc62eb20AeE69AA0D2870d7a59fED35",
     },
     VaulticInvestmentManager: {
-      proxy: "0x87Ba556D63e1b6FD7C82ba024118249F235934E3",
-      implementation: "0xeFeBF5385e7774A9eE144Fe21e3ccd3c06B3C94f",
+      proxy: "0xcA3EDAfd3344f57e7180ABD051e1bF027498e503",
+      implementation: "0xf8C54CA047f20C58aeD77F3ddA09A8A677B111DE",
     },
     VaulticFractionalOwnershipToken: {
-      implementation: "0x607b282F23C2e357Bf320EAbE50e0Ea3Aa45274F",
-    },
-    // Fuji: payment token is USDC testnet (Investment Manager uses this; buy flow reads paymentToken() from contract).
-    MockERC20: {
-      address: FUJI_USDC_ADDRESS,
+      implementation: "0x4d8f5709AcD40aC1DB92A32F68DB81a1d5B1C3B9",
     },
   },
   // [chains.avalanche.id]: { ... } — add when mainnet is deployed
