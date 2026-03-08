@@ -32,6 +32,9 @@ export const Footer = () => {
           <Link href="/investor" className="link link-hover">
             For investors
           </Link>
+          <Link href="/control-panel" className="link link-hover">
+            Control panel
+          </Link>
         </div>
       </nav>
       <div className="flex flex-wrap items-center justify-center gap-2 md:place-self-end md:justify-self-end">
