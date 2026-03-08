@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Address } from "@scaffold-ui/components";
 import { useAccount } from "wagmi";
 import { ArrowLeftIcon, DocumentTextIcon, LinkIcon } from "@heroicons/react/24/outline";
+import { InvestmentPanel } from "~~/components/assets/InvestmentPanel";
 import { RelistWholeAssetBlock } from "~~/components/assets/RelistWholeAssetBlock";
 import { WholeAssetPurchaseBlock } from "~~/components/assets/WholeAssetPurchaseBlock";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
@@ -202,6 +203,20 @@ export default function AssetDetailsPage() {
           {rec.state === 1 && rec.model === 0 && rec.valuation > 0n && (
             <div className="mt-6">
               <WholeAssetPurchaseBlock assetId={rec.assetId} valuation={rec.valuation} assetName={rec.assetName} />
+            </div>
+          )}
+
+          {rec.state === 2 && rec.pricePerShare > 0n && hasTokenContract && (
+            <div className="mt-6">
+              <InvestmentPanel assetId={rec.assetId} pricePerShare={rec.pricePerShare} assetName={rec.assetName} />
+            </div>
+          )}
+
+          {rec.state === 4 && rec.model === 1 && (
+            <div className="mt-6 rounded-lg border border-base-300 bg-base-200/60 p-4">
+              <p className="text-sm text-base-content/80">
+                This asset is relisted for fractional offering. A protocol admin must tokenize it to open share sales.
+              </p>
             </div>
           )}
 
