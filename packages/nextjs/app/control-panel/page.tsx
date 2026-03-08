@@ -4,9 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { AddressInput } from "@scaffold-ui/components";
 import { useAccount } from "wagmi";
-import { BanknotesIcon, Cog6ToothIcon, LockClosedIcon, LockOpenIcon, WalletIcon } from "@heroicons/react/24/outline";
+import {
+  BanknotesIcon,
+  Cog6ToothIcon,
+  KeyIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+  WalletIcon,
+} from "@heroicons/react/24/outline";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
 const PAYMENT_TOKEN_DECIMALS = 6;
@@ -43,11 +50,31 @@ export default function ControlPanelPage() {
     functionName: "accumulatedFees",
   });
 
+  const { data: registryOwner } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "owner",
+  });
+  const { data: registryTokenizer } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "tokenizer",
+  });
+  const { data: imContractInfo } = useDeployedContractInfo({ contractName: "VaulticInvestmentManager" });
+  const imProxyAddress = imContractInfo?.address;
+
   const { writeContractAsync, isMining } = useScaffoldWriteContract({
     contractName: "VaulticInvestmentManager",
   });
+  const { writeContractAsync: writeRegistry, isMining: registryMining } = useScaffoldWriteContract({
+    contractName: "VaulticAssetRegistry",
+  });
 
   const isOwner = !!address && !!invOwner && address.toLowerCase() === (invOwner as string).toLowerCase();
+  const isRegistryOwner =
+    !!address && !!registryOwner && address.toLowerCase() === (registryOwner as string).toLowerCase();
+  const tokenizerMismatch =
+    !!imProxyAddress &&
+    !!registryTokenizer &&
+    (registryTokenizer as string).toLowerCase() !== imProxyAddress.toLowerCase();
 
   const accumulatedFormatted =
     accumulatedFees !== undefined ? (Number(accumulatedFees) / 10 ** PAYMENT_TOKEN_DECIMALS).toFixed(2) : "—";
@@ -142,6 +169,20 @@ export default function ControlPanelPage() {
     }
   };
 
+  const handleSetTokenizer = async () => {
+    if (!isRegistryOwner || !imProxyAddress) return;
+    try {
+      await writeRegistry({
+        functionName: "setTokenizer",
+        args: [imProxyAddress as `0x${string}`],
+      });
+      notification.success("Registry tokenizer set to Investment Manager. Relist will work now.");
+    } catch (e: unknown) {
+      console.error(e);
+      notification.error("Set tokenizer failed");
+    }
+  };
+
   return (
     <div className="flex flex-col grow">
       <section className="px-4 py-8 md:py-12">
@@ -178,14 +219,14 @@ export default function ControlPanelPage() {
                 </Link>
               </p>
             </div>
-          ) : !isOwner ? (
+          ) : !isOwner && !isRegistryOwner ? (
             <div className="rounded-2xl border border-base-300 bg-base-100 p-8 sm:p-10 text-center shadow-sm">
               <div className="w-14 h-14 rounded-full bg-warning/20 flex items-center justify-center mx-auto mb-4">
                 <LockClosedIcon className="h-7 w-7 text-warning" />
               </div>
               <h2 className="text-xl font-bold text-base-content">Access restricted</h2>
               <p className="mt-2 text-base-content/70 max-w-md mx-auto">
-                Only the Investment Manager owner can use this panel. Connect with the owner wallet.
+                Only the Investment Manager or Registry owner can use this panel. Connect with an owner wallet.
               </p>
               <p className="mt-6 text-sm text-base-content/60">
                 <Link href="/owner" className="link link-primary">
@@ -199,155 +240,211 @@ export default function ControlPanelPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Current state */}
-              <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
-                <h3 className="font-bold text-base-content">Current state</h3>
-                <dl className="mt-3 space-y-2 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-base-content/70">Paused</dt>
-                    <dd className="font-mono">{paused === true ? "Yes" : "No"}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-base-content/70">Protocol fee</dt>
-                    <dd className="font-mono">
-                      {protocolFeeBps !== undefined
-                        ? `${Number(protocolFeeBps)} bps (${((Number(protocolFeeBps) / 10000) * 100).toFixed(2)}%)`
-                        : "—"}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-base-content/70">Fee treasury</dt>
-                    <dd className="font-mono truncate max-w-[12rem]" title={feeTreasury as string}>
-                      {feeTreasury
-                        ? `${(feeTreasury as string).slice(0, 6)}…${(feeTreasury as string).slice(-4)}`
-                        : "—"}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-base-content/70">Token implementation</dt>
-                    <dd className="font-mono truncate max-w-[12rem]" title={tokenImplementation as string}>
-                      {tokenImplementation
-                        ? `${(tokenImplementation as string).slice(0, 6)}…${(tokenImplementation as string).slice(-4)}`
-                        : "—"}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-base-content/70">Accumulated fees</dt>
-                    <dd className="font-mono">${accumulatedFormatted} (payment token)</dd>
-                  </div>
-                </dl>
-              </div>
-
-              {/* Sweep fees */}
-              <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
-                <h3 className="font-bold text-base-content flex items-center gap-2">
-                  <BanknotesIcon className="h-5 w-5 text-primary" />
-                  Sweep protocol fees
-                </h3>
-                <p className="mt-1 text-sm text-base-content/70">
-                  Send accumulated fees to the fee treasury. Balance: ${accumulatedFormatted}
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm mt-3"
-                  disabled={!canSweep || isMining}
-                  onClick={handleSweep}
-                >
-                  {isMining ? <span className="loading loading-spinner loading-sm" /> : "Sweep to treasury"}
-                </button>
-              </div>
-
-              {/* Set protocol fee */}
-              <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
-                <h3 className="font-bold text-base-content">Set protocol fee</h3>
-                <p className="mt-1 text-sm text-base-content/70">Fee in basis points (0–{MAX_FEE_BPS}; 100 = 1%).</p>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <input
-                    type="number"
-                    min={0}
-                    max={MAX_FEE_BPS}
-                    value={feeBps}
-                    onChange={e => setFeeBps(e.target.value)}
-                    className="input input-bordered input-sm w-28"
-                    placeholder="e.g. 50"
-                  />
-                  <button type="button" className="btn btn-primary btn-sm" disabled={isMining} onClick={handleSetFee}>
-                    Update fee
-                  </button>
-                </div>
-              </div>
-
-              {/* Set fee treasury */}
-              <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
-                <h3 className="font-bold text-base-content">Set fee treasury</h3>
-                <p className="mt-1 text-sm text-base-content/70">Address that receives swept fees.</p>
-                <div className="mt-3 space-y-2">
-                  <AddressInput
-                    placeholder="New treasury address"
-                    value={newTreasury}
-                    onChange={val => setNewTreasury(val ?? "")}
-                  />
+              {/* Registry admin: set tokenizer so relist works */}
+              {isRegistryOwner && (
+                <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                  <h3 className="font-bold text-base-content flex items-center gap-2">
+                    <KeyIcon className="h-5 w-5 text-primary" />
+                    Registry admin
+                  </h3>
+                  <p className="mt-1 text-sm text-base-content/70">
+                    The registry allows relisting (whole or fractional) only for the address set as tokenizer. Set it to
+                    the Investment Manager proxy so owner relists work.
+                  </p>
+                  <dl className="mt-3 space-y-2 text-sm">
+                    <div className="flex justify-between gap-4 items-center">
+                      <dt className="text-base-content/70">Current tokenizer</dt>
+                      <dd className="font-mono truncate max-w-[14rem]" title={registryTokenizer as string}>
+                        {registryTokenizer
+                          ? `${(registryTokenizer as string).slice(0, 6)}…${(registryTokenizer as string).slice(-4)}`
+                          : "—"}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-4 items-center">
+                      <dt className="text-base-content/70">Investment Manager (proxy)</dt>
+                      <dd className="font-mono truncate max-w-[14rem]" title={imProxyAddress ?? ""}>
+                        {imProxyAddress ? `${imProxyAddress.slice(0, 6)}…${imProxyAddress.slice(-4)}` : "—"}
+                      </dd>
+                    </div>
+                  </dl>
                   <button
                     type="button"
-                    className="btn btn-primary btn-sm"
-                    disabled={!newTreasury || isMining}
-                    onClick={handleSetTreasury}
+                    className="btn btn-primary btn-sm mt-3"
+                    disabled={!tokenizerMismatch || registryMining}
+                    onClick={handleSetTokenizer}
                   >
-                    Update treasury
+                    {registryMining ? (
+                      <span className="loading loading-spinner loading-sm" />
+                    ) : (
+                      "Set tokenizer to Investment Manager"
+                    )}
                   </button>
+                  {!tokenizerMismatch && registryTokenizer && imProxyAddress && (
+                    <p className="mt-2 text-xs text-success">Tokenizer is already set correctly. Relist should work.</p>
+                  )}
                 </div>
-              </div>
+              )}
 
-              {/* Set token implementation */}
-              <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
-                <h3 className="font-bold text-base-content">Set token implementation</h3>
-                <p className="mt-1 text-sm text-base-content/70">
-                  Implementation used for new fractional token clones. Does not upgrade existing proxies.
-                </p>
-                <div className="mt-3 space-y-2">
-                  <AddressInput
-                    placeholder="New implementation address"
-                    value={newImplementation}
-                    onChange={val => setNewImplementation(val ?? "")}
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    disabled={!newImplementation || isMining}
-                    onClick={handleSetImplementation}
-                  >
-                    Update implementation
-                  </button>
-                </div>
-              </div>
+              {/* Investment Manager panel (IM owner only) */}
+              {isOwner && (
+                <>
+                  <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <h3 className="font-bold text-base-content">Current state</h3>
+                    <dl className="mt-3 space-y-2 text-sm">
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-base-content/70">Paused</dt>
+                        <dd className="font-mono">{paused === true ? "Yes" : "No"}</dd>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-base-content/70">Protocol fee</dt>
+                        <dd className="font-mono">
+                          {protocolFeeBps !== undefined
+                            ? `${Number(protocolFeeBps)} bps (${((Number(protocolFeeBps) / 10000) * 100).toFixed(2)}%)`
+                            : "—"}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-base-content/70">Fee treasury</dt>
+                        <dd className="font-mono truncate max-w-[12rem]" title={feeTreasury as string}>
+                          {feeTreasury
+                            ? `${(feeTreasury as string).slice(0, 6)}…${(feeTreasury as string).slice(-4)}`
+                            : "—"}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-base-content/70">Token implementation</dt>
+                        <dd className="font-mono truncate max-w-[12rem]" title={tokenImplementation as string}>
+                          {tokenImplementation
+                            ? `${(tokenImplementation as string).slice(0, 6)}…${(tokenImplementation as string).slice(-4)}`
+                            : "—"}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-base-content/70">Accumulated fees</dt>
+                        <dd className="font-mono">${accumulatedFormatted} (payment token)</dd>
+                      </div>
+                    </dl>
+                  </div>
 
-              {/* Pause / Unpause */}
-              <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
-                <h3 className="font-bold text-base-content">Pause / unpause</h3>
-                <p className="mt-1 text-sm text-base-content/70">
-                  When paused, purchases, relists, and withdrawals are disabled.
-                </p>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    type="button"
-                    className="btn btn-warning btn-sm gap-1"
-                    disabled={paused === true || isMining}
-                    onClick={handlePause}
-                  >
-                    <LockClosedIcon className="h-4 w-4" />
-                    Pause
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm gap-1"
-                    disabled={paused === false || isMining}
-                    onClick={handleUnpause}
-                  >
-                    <LockOpenIcon className="h-4 w-4" />
-                    Unpause
-                  </button>
-                </div>
-              </div>
+                  {/* Sweep fees */}
+                  <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <h3 className="font-bold text-base-content flex items-center gap-2">
+                      <BanknotesIcon className="h-5 w-5 text-primary" />
+                      Sweep protocol fees
+                    </h3>
+                    <p className="mt-1 text-sm text-base-content/70">
+                      Send accumulated fees to the fee treasury. Balance: ${accumulatedFormatted}
+                    </p>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm mt-3"
+                      disabled={!canSweep || isMining}
+                      onClick={handleSweep}
+                    >
+                      {isMining ? <span className="loading loading-spinner loading-sm" /> : "Sweep to treasury"}
+                    </button>
+                  </div>
+
+                  {/* Set protocol fee */}
+                  <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <h3 className="font-bold text-base-content">Set protocol fee</h3>
+                    <p className="mt-1 text-sm text-base-content/70">
+                      Fee in basis points (0–{MAX_FEE_BPS}; 100 = 1%).
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        max={MAX_FEE_BPS}
+                        value={feeBps}
+                        onChange={e => setFeeBps(e.target.value)}
+                        className="input input-bordered input-sm w-28"
+                        placeholder="e.g. 50"
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        disabled={isMining}
+                        onClick={handleSetFee}
+                      >
+                        Update fee
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Set fee treasury */}
+                  <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <h3 className="font-bold text-base-content">Set fee treasury</h3>
+                    <p className="mt-1 text-sm text-base-content/70">Address that receives swept fees.</p>
+                    <div className="mt-3 space-y-2">
+                      <AddressInput
+                        placeholder="New treasury address"
+                        value={newTreasury}
+                        onChange={val => setNewTreasury(val ?? "")}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        disabled={!newTreasury || isMining}
+                        onClick={handleSetTreasury}
+                      >
+                        Update treasury
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Set token implementation */}
+                  <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <h3 className="font-bold text-base-content">Set token implementation</h3>
+                    <p className="mt-1 text-sm text-base-content/70">
+                      Implementation used for new fractional token clones. Does not upgrade existing proxies.
+                    </p>
+                    <div className="mt-3 space-y-2">
+                      <AddressInput
+                        placeholder="New implementation address"
+                        value={newImplementation}
+                        onChange={val => setNewImplementation(val ?? "")}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        disabled={!newImplementation || isMining}
+                        onClick={handleSetImplementation}
+                      >
+                        Update implementation
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Pause / Unpause */}
+                  <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <h3 className="font-bold text-base-content">Pause / unpause</h3>
+                    <p className="mt-1 text-sm text-base-content/70">
+                      When paused, purchases, relists, and withdrawals are disabled.
+                    </p>
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-warning btn-sm gap-1"
+                        disabled={paused === true || isMining}
+                        onClick={handlePause}
+                      >
+                        <LockClosedIcon className="h-4 w-4" />
+                        Pause
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm gap-1"
+                        disabled={paused === false || isMining}
+                        onClick={handleUnpause}
+                      >
+                        <LockOpenIcon className="h-4 w-4" />
+                        Unpause
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
 
               <p className="text-sm text-base-content/60">
                 <Link href="/owner" className="link link-primary">

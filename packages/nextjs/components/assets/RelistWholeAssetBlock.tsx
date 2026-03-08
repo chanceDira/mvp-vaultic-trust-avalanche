@@ -46,7 +46,12 @@ export function RelistWholeAssetBlock({ assetId, assetName }: RelistWholeAssetBl
       setNewMetadataURI("");
     } catch (err: unknown) {
       console.error(err);
-      notification.error(getParsedError(err) || "Relist failed.");
+      const msg = getParsedError(err) || "Relist failed.";
+      const friendly =
+        typeof msg === "string" && msg.includes("UnauthorizedCaller")
+          ? "Relist failed: protocol configuration error. The registry tokenizer may not be set to the Investment Manager. Ask the protocol admin to run registry.setTokenizer(InvestmentManagerProxyAddress)."
+          : msg;
+      notification.error(friendly);
     }
   };
 
@@ -75,7 +80,12 @@ export function RelistWholeAssetBlock({ assetId, assetName }: RelistWholeAssetBl
       setNewMetadataURI("");
     } catch (err: unknown) {
       console.error(err);
-      notification.error(getParsedError(err) || "Relist failed.");
+      const msg = getParsedError(err) || "Relist failed.";
+      const friendly =
+        typeof msg === "string" && msg.includes("UnauthorizedCaller")
+          ? "Relist failed: protocol configuration error. The registry tokenizer may not be set to the Investment Manager. Ask the protocol admin to run registry.setTokenizer(InvestmentManagerProxyAddress)."
+          : msg;
+      notification.error(friendly);
     }
   };
 

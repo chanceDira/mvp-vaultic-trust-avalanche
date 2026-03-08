@@ -18,7 +18,13 @@ export const Footer = () => {
     contractName: "VaulticInvestmentManager",
     functionName: "owner",
   });
+  const { data: registryOwner } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "owner",
+  });
   const isInvOwner = !!address && !!invOwner && address.toLowerCase() === (invOwner as string).toLowerCase();
+  const isRegistryOwner =
+    !!address && !!registryOwner && address.toLowerCase() === (registryOwner as string).toLowerCase();
 
   return (
     <footer className="footer footer-center md:footer-horizontal p-6 md:px-8 md:py-5 bg-base-200 text-base-content border-t border-base-300 text-sm">
@@ -47,7 +53,7 @@ export const Footer = () => {
           <Link href="/investor" className="link link-hover">
             For investors
           </Link>
-          {isInvOwner && (
+          {(isInvOwner || isRegistryOwner) && (
             <Link href="/control-panel" className="link link-hover">
               Control panel
             </Link>

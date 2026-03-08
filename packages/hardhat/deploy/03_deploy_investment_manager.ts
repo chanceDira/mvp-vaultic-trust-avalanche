@@ -71,13 +71,22 @@ const deployInvestmentManager: DeployFunction = async function (hre: HardhatRunt
     autoMine: true,
   });
 
+  const imProxyAddress = (await get("VaulticInvestmentManager")).address;
   const registryContract = await hre.ethers.getContract<Contract>("VaulticAssetRegistry", deployer);
   // Cap gas so local/CI nodes with low block gas limit (e.g. 16_777_216) accept the tx
   const setTokenizerGasLimit = 500_000;
-  await registryContract.setTokenizer((await get("VaulticInvestmentManager")).address, {
+  await registryContract.setTokenizer(imProxyAddress, {
     gasLimit: setTokenizerGasLimit,
   });
-  console.log("VaulticAssetRegistry tokenizer set to VaulticInvestmentManager");
+  console.log("VaulticAssetRegistry tokenizer set to VaulticInvestmentManager proxy:", imProxyAddress);
+
+  const currentTokenizer = await registryContract.tokenizer();
+  if (currentTokenizer.toLowerCase() !== imProxyAddress.toLowerCase()) {
+    throw new Error(
+      `Deploy verification failed: registry.tokenizer (${currentTokenizer}) != InvestmentManager proxy (${imProxyAddress}). Relist will revert with UnauthorizedCaller.`,
+    );
+  }
+  console.log("Verified: registry.tokenizer equals InvestmentManager proxy.");
 };
 
 export default deployInvestmentManager;

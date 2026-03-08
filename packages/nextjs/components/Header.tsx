@@ -35,8 +35,14 @@ export const HeaderMenuLinks = () => {
     contractName: "VaulticInvestmentManager",
     functionName: "owner",
   });
+  const { data: registryOwner } = useScaffoldReadContract({
+    contractName: "VaulticAssetRegistry",
+    functionName: "owner",
+  });
   const isInvOwner = !!address && !!invOwner && address.toLowerCase() === (invOwner as string).toLowerCase();
-  const links = isInvOwner ? [...baseMenuLinks, controlPanelLink] : baseMenuLinks;
+  const isRegistryOwner =
+    !!address && !!registryOwner && address.toLowerCase() === (registryOwner as string).toLowerCase();
+  const links = isInvOwner || isRegistryOwner ? [...baseMenuLinks, controlPanelLink] : baseMenuLinks;
 
   return (
     <>
