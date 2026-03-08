@@ -77,7 +77,7 @@ Canonical addresses per network. Proxies are the application’s contract endpoi
 | Contract | Role | Address |
 |----------|------|---------|
 | VaulticAssetRegistry | Proxy | `0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635` |
-| VaulticAssetRegistry_Implementation | Implementation | `0xEdD288334Fc62eb20AeE69AA0D2870d7a59fED35` |
+| VaulticAssetRegistry_Implementation | Implementation | `0x71c116D7bd6965A6912892978B42Fa1c658af9e6` |
 | VaulticInvestmentManager | Proxy | `0xcA3EDAfd3344f57e7180ABD051e1bF027498e503` |
 | VaulticInvestmentManager_Implementation | Implementation | `0x2c6E61EfB9EdbCF2F5fFdAC52F65F8Dec0bD98dd` |
 | VaulticFractionalOwnershipToken | Implementation | `0x4d8f5709AcD40aC1DB92A32F68DB81a1d5B1C3B9` |
@@ -99,6 +99,8 @@ Deploy with `yarn deploy --network avalanche` and update this section with the n
 |---------|-------------|
 | `yarn chain` | Start local Hardhat chain |
 | `yarn deploy` | Deploy contracts (default: local; use `--network` for Fuji/mainnet) |
+| `yarn deploy:registry` | Deploy/upgrade only VaulticAssetRegistry (e.g. `--network avalancheFuji`) |
+| `yarn deploy:investment-manager` | Deploy/upgrade only VaulticInvestmentManager |
 | `yarn start` | Run Next.js dev server |
 | `yarn next:build` | Build Next.js for production |
 | `yarn compile` | Compile Solidity contracts |

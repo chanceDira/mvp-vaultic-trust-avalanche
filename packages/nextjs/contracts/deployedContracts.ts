@@ -7078,7 +7078,7 @@ const deployedContracts = {
       deployedOnBlock: 52491874,
     },
     VaulticAssetRegistry_Implementation: {
-      address: "0x1975013226ae51E4e284D88100264b63787BcB2A",
+      address: "0x71c116D7bd6965A6912892978B42Fa1c658af9e6",
       abi: [
         {
           inputs: [
@@ -8181,7 +8181,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 52494095,
+      deployedOnBlock: 52498556,
     },
     VaulticAssetRegistry_Proxy: {
       address: "0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635",

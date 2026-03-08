@@ -16,6 +16,8 @@
     "chain": "yarn hardhat:chain",
     "compile": "yarn hardhat:compile",
     "deploy": "yarn hardhat:deploy",
+    "deploy:registry": "yarn hardhat:deploy --tags VaulticAssetRegistry",
+    "deploy:investment-manager": "yarn hardhat:deploy --tags VaulticInvestmentManager",
     "fork": "yarn hardhat:fork",
     "format": "yarn next:format && yarn hardhat:format",
     "generate": "yarn account:generate",
