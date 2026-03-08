@@ -33,8 +33,9 @@ export default function MarketplacePage() {
             Browse tokenized assets. Invest in whole assets or buy fractions with on-chain ownership.
           </p>
           <p className="text-sm text-base-content/60 mb-6">
-            Only assets with status <span className="font-medium text-base-content/70">Tokenized</span> show the buy
-            panel; Pending assets are not yet open for investment.
+            <span className="font-medium text-base-content/70">Active</span> whole assets can be bought wholly;{" "}
+            <span className="font-medium text-base-content/70">Tokenized</span> assets can be bought in shares. Pending
+            assets are not yet open for investment.
           </p>
 
           {!isConnected && (
