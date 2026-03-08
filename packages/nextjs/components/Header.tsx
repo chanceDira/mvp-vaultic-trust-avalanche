@@ -20,6 +20,7 @@ export const menuLinks: HeaderMenuLink[] = [
   { label: "Owner", href: "/owner" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "Investor", href: "/investor" },
+  { label: "Control panel", href: "/control-panel" },
 ];
 
 export const HeaderMenuLinks = () => {
