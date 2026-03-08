@@ -2,6 +2,7 @@
 
 import { Address } from "@scaffold-ui/components";
 import { InvestmentPanel } from "~~/components/assets/InvestmentPanel";
+import { RelistAssetBlock } from "~~/components/assets/RelistAssetBlock";
 import { TokenProgressBar } from "~~/components/assets/TokenProgressBar";
 import { TokenizationActions } from "~~/components/assets/TokenizationActions";
 import { WithdrawProceedsBlock } from "~~/components/assets/WithdrawProceedsBlock";
@@ -82,6 +83,12 @@ export function AssetCard({
     (rec.state === 2 || rec.state === 3) &&
     !!rec.tokenContract &&
     rec.tokenContract !== "0x0000000000000000000000000000000000000000";
+  const showRelistBlock =
+    showTokenizationActions &&
+    rec.state === 3 &&
+    rec.model === 1 &&
+    !!rec.tokenContract &&
+    rec.tokenContract !== "0x0000000000000000000000000000000000000000";
 
   return (
     <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm transition-shadow hover:shadow-md">
@@ -124,6 +131,7 @@ export function AssetCard({
           </div>
         )}
       {showProceedsBlock && <WithdrawProceedsBlock assetId={assetId} assetOwner={rec.assetOwner} />}
+      {showRelistBlock && <RelistAssetBlock assetId={assetId} tokenContract={rec.tokenContract} />}
       {showTokenizationActions && (
         <TokenizationActions
           assetId={assetId}
