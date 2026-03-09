@@ -266,7 +266,6 @@ export default function ControlPanelPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Registry admin: set tokenizer so relist works */}
               {isRegistryOwner && (
                 <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                   <h3 className="font-bold text-base-content flex items-center gap-2">
@@ -343,7 +342,6 @@ export default function ControlPanelPage() {
                 </div>
               )}
 
-              {/* Investment Manager panel (IM owner only) */}
               {isOwner && (
                 <>
                   <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
@@ -384,7 +382,6 @@ export default function ControlPanelPage() {
                     </dl>
                   </div>
 
-                  {/* Sweep fees */}
                   <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                     <h3 className="font-bold text-base-content flex items-center gap-2">
                       <BanknotesIcon className="h-5 w-5 text-primary" />
@@ -403,7 +400,6 @@ export default function ControlPanelPage() {
                     </button>
                   </div>
 
-                  {/* Set protocol fee */}
                   <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                     <h3 className="font-bold text-base-content">Set protocol fee</h3>
                     <p className="mt-1 text-sm text-base-content/70">
@@ -430,7 +426,6 @@ export default function ControlPanelPage() {
                     </div>
                   </div>
 
-                  {/* Set fee treasury */}
                   <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                     <h3 className="font-bold text-base-content">Set fee treasury</h3>
                     <p className="mt-1 text-sm text-base-content/70">Address that receives swept fees.</p>
@@ -451,7 +446,6 @@ export default function ControlPanelPage() {
                     </div>
                   </div>
 
-                  {/* Set token implementation */}
                   <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                     <h3 className="font-bold text-base-content">Set token implementation</h3>
                     <p className="mt-1 text-sm text-base-content/70">
@@ -474,7 +468,6 @@ export default function ControlPanelPage() {
                     </div>
                   </div>
 
-                  {/* Pause / Unpause */}
                   <div className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                     <h3 className="font-bold text-base-content">Pause / unpause</h3>
                     <p className="mt-1 text-sm text-base-content/70">

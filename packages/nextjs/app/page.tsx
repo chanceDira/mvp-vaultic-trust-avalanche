@@ -52,7 +52,6 @@ const HOW_IT_WORKS = [
 const Home: NextPage = () => {
   return (
     <div className="min-h-0 flex flex-col">
-      {/* ─── Hero: full-width, centered, welcoming ─── */}
       <section className="relative flex min-h-[calc(100vh-8rem)] sm:min-h-[calc(100vh-7rem)] flex-col justify-center bg-base-100 px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24">
         <div className="mx-auto w-full max-w-4xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/90 sm:text-sm">
@@ -97,7 +96,6 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {/* ─── Asset Tokenization Preview (full-width, spans page) ─── */}
       <section className="border-t border-base-300/80 bg-base-200/60 py-16 lg:py-20">
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12">
           <div className="mb-8 sm:mb-10">
@@ -145,7 +143,6 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {/* ─── How it works ─── */}
       <section id="how-it-works" className="bg-base-100 py-16 lg:py-20">
         <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12">
           <div className="mb-12 text-center lg:mb-14">
@@ -174,7 +171,6 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {/* ─── Footer strip ─── */}
       <section className="border-t border-base-300/80 bg-base-200/50 py-8 sm:py-10">
         <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12">
           <p className="text-center text-sm text-base-content/70">
