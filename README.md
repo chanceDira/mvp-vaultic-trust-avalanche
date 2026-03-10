@@ -6,7 +6,23 @@ Built with Next.js, RainbowKit, Hardhat, Wagmi, Viem, and TypeScript.
 
 ---
 
+EXPLORER LINKS TO VERIFIED SMART CONTRACTS
+---------------------------------
+
+[[Vaultic Asset Registry Contracy - Proxy]](https://testnet.snowtrace.io/address/0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635)
+
+
+[[Investment Manager Contract - Proxy]](https://testnet.snowtrace.io/address/0xcA3EDAfd3344f57e7180ABD051e1bF027498e503)
+
+[[Vaultic Fractional Token Contract - Implementation]](https://testnet.snowtrace.io/token/0x4d8f5709AcD40aC1DB92A32F68DB81a1d5B1C3B9?chainid=43113)
+
+[[Investment Manager (Token holdings && Txns)]](https://testnet.snowtrace.io/address/0xcA3EDAfd3344f57e7180ABD051e1bF027498e503/tokentxns)
+
+
+
 ## Product
+
+![Tokenized asset sample](./assets/tokenized.png)
 
 - **Asset owners**: Submit real-world assets; choose whole-asset sale or fractional tokenization.
 - **Investors**: Browse the marketplace and invest in whole assets or fractions; ownership is on-chain.
