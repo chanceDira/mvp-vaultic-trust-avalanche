@@ -8,6 +8,8 @@ Built with Next.js, RainbowKit, Hardhat, Wagmi, Viem, and TypeScript.
 
 ## Product
 
+![Tokenized asset sample](./assets/tokenized.png)
+
 - **Asset owners**: Submit real-world assets; choose whole-asset sale or fractional tokenization.
 - **Investors**: Browse the marketplace and invest in whole assets or fractions; ownership is on-chain.
 - **Stack**: Next.js (App Router), TailwindCSS, DaisyUI, Solidity on **Avalanche C-Chain** and Fuji testnet.
