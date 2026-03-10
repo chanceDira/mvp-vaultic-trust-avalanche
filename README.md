@@ -9,7 +9,7 @@ Built with Next.js, RainbowKit, Hardhat, Wagmi, Viem, and TypeScript.
 EXPLORER LINKS TO VERIFIED SMART CONTRACTS
 ---------------------------------
 
-[[Vaultic Asset Registry Contracy - Proxy]](https://testnet.snowtrace.io/address/0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635)
+[[Vaultic Asset Registry Contract - Proxy]](https://testnet.snowtrace.io/address/0x7bE0137284bE5E40Af3e6b5c178C1492F62bF635)
 
 
 [[Investment Manager Contract - Proxy]](https://testnet.snowtrace.io/address/0xcA3EDAfd3344f57e7180ABD051e1bF027498e503)
